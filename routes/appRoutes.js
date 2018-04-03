@@ -1,14 +1,18 @@
 'use strict';
 
 module.exports = function(app) {
- 	var user = require('../controllers/userController'); //to get something outside the caller file folder
+    var isAuthenticate = require('./middleware');
+    var pet = require('../controllers/petController');
 
-  	app.get("/",function(req,res){
-	        res.json({"Message" : "Hello World !"});
-	});
+    app.get('/', function(req,res){
+        res.json({"Message" : "Hello World!"});
+    });
 
-    //check access
-    app.post('/verify_access', user.verify);
+    app.post('/verify', isAuthenticate.verify, function(req,res){
+        res.json({"Message" : "is Aunthenticate"});
+    });
+
+    app.post('/create_pet', isAuthenticate.verify, pet.createPet );
 
 };
   
