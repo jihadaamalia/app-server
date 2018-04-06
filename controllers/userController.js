@@ -5,7 +5,7 @@ require('dotenv').config();
 
 module.exports.createUserProf = function (req, res) {
     var userData = req.body;
-    var checkDataSql = "SELECT id FROM `user_profile` WHERE `username`= '" + res.locals.username + "'"
+    var checkDataSql = "SELECT id FROM `user_profile` WHERE `username`= '" + res.locals.username + "'";
     var userProfileSql = "INSERT INTO `user_profile` (`name`, `user_dob`, `sex`, `username`, `photo`, `city`, `added_at`)  VALUES ('" + userData.name + "', '" + userData.user_dob + "', '" + userData.sex + "', '" + res.locals.username + "', '" + userData.photo + "', '" + userData.city + "', CURRENT_TIMESTAMP())";
     db.query(checkDataSql, function(err, result){
         if(err) {
