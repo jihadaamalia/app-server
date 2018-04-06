@@ -3,13 +3,21 @@ exports.provinces=function(req, res){
     var query = db.query(provinces_sql, function(err, result){
         if (err) {
             res.json({
-                "err": err
+                status: 200,
+                error: true,
+                error_msg: 'Failed fetching data',
+                response: err
             });
             res.end();
         }
         else {
             res.json({
-                "results": result
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: {
+                    provinces: result
+                }
             });
             res.end();
         }
@@ -21,13 +29,21 @@ exports.cities=function(req, res){
     var query = db.query(cities_sql, function(err, result){
         if(err){
             res.json({
-                "err": err
+                status: 200,
+                error: false,
+                error_msg: 'Failed fetching data',
+                response: err
             });
             res.end();
         }
         else if(result){
             res.json({
-                "results": result
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: {
+                    cities: result
+                }
             });
             res.end();
         }
