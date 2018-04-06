@@ -14,5 +14,6 @@ module.exports = function(app) {
 
     app.post('/create_pet', isAuthenticate.verify, pet.createPet );
 
+    app.post('/update_pet', isAuthenticate.verify, pet.updatePet );
 };
   
