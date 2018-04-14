@@ -55,17 +55,37 @@ exports.createPet = function (req, res) {
                         });
                         res.end();
                     } else {
-                        res.json({
-                            status: 200,
-                            error: true,
-                            error_msg: '',
-                            response: 'Pet created!'
-                        });
-                        res.end();
+                        self.updateFirstLogin ();
                     }
                 });
             }
         });
+    };
+
+    self.updateFirstLogin = function () {
+        var firstLogin = "UPDATE `user` SET `first_login` = 0 WHERE `username` = '" + userData.username + "'";
+
+        db.query(firstLogin, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: 'MySQL failed',
+                    response: err
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: '',
+                    response: 'Pet created!'
+                });
+                res.end();
+            }
+        });
+
+
     };
 };
 
