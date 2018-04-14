@@ -35,6 +35,7 @@ function handleDisconnect() {
             setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
         } else {
             console.log('connection success');
+            createServer();
         }                                  // to avoid a hot loop, and to allow our node script to
     });                                     // process asynchronous requests in the meantime.
                                             // If you're also serving http, display a 503 error.
@@ -46,7 +47,6 @@ function handleDisconnect() {
             throw err;                                  // server variable configures this)
         }
     });
-
 }
 
 handleDisconnect();
@@ -76,7 +76,8 @@ routes(app);
 /**
  * creating server.
  */
-
-http.createServer(app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-});
+function createServer () {
+    http.createServer(app).listen(app.get('port'), function(){
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+};
