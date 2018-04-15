@@ -23,7 +23,7 @@ module.exports = function(app) {
 
     app.post('/create_pet', isAuthenticate.verify, pet.createPet );
 
-    app.post('/update_pet', isAuthenticate.verify, pet.updatePet );
+    //app.post('/update_pet', isAuthenticate.verify, pet.updatePet );
 
     //get location
     app.get('/provinces', isAuthenticate.verify, location.provinces); //get province

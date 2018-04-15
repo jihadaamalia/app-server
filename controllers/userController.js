@@ -16,6 +16,7 @@ module.exports.createUserProf = function (req, res) { //step 1 of user registrat
             });
             res.end();
         } else if (result[0]) { //if data has created
+            //TODO: USE IF EXIST INSTEAD OF 3 DIFF QUERY
             var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `username` = '" + res.locals.username + "'";
             db.query(updateUserProfile, function(err, result){
                 if(err) {
