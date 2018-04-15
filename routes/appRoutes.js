@@ -20,14 +20,14 @@ module.exports = function(app) {
         res.end();
     });
 
+    //register
     app.post('/create_profile', isAuthenticate.verify, user.createUserProf );
-
     app.post('/create_pet', isAuthenticate.verify, pet.createPet );
+    app.post('/create_vaccine', isAuthenticate.verify, pet.createVaccine);
+    app.post('/create_vaccine', isAuthenticate.verify, pet.matchPreference);
 
-   // app.post('/create_vaccine', isAuthenticate.verify, pet.createVaccine);
+    //get vaccine
     app.get('/vaccines/:variant', isAuthenticate.verify, vaccine.vaccines);
-
-    //app.post('/update_pet', isAuthenticate.verify, pet.updatePet );
 
     //get location
     app.get('/provinces', isAuthenticate.verify, location.provinces); //get province

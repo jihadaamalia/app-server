@@ -3,7 +3,7 @@
  */
 require('dotenv').config();
 
-exports.createPet = function (req, res) {
+module.exports.createPet = function (req, res) {
     self = this;
     var petData = req.body;
     var userData = res.locals;
@@ -107,3 +107,80 @@ exports.createPet = function (req, res) {
 
     };
 };
+
+module.exports.createVaccine = function (req, res) {
+    var self = this;
+    var userData = res.locals;
+    var getId = "SELECT pet.user_id, pet.id FROM `pet` INNER JOIN `user_profile` ON pet.user_id = user_profile.id WHERE user_profile.username = '" + userData.username + "'";
+
+    db.query(getId, function(err, results) {
+        if (err) {
+            res.json({
+                status: 200,
+                error: true,
+                error_msg: 'MySQL failed',
+                response: err
+            });
+            res.end();
+        } else {
+            userData.user_id = results[0].user_id;
+            userData.pet_id = results[0].id;
+
+            self.deleteVaccines ();
+        }
+    });
+
+    self.deleteVaccines = function () {
+        var deleteExisting = "DELETE FROM `have_vaccines` WHERE `id_pet` = '" + userData.pet_id + "'";
+        db.query(deleteExisting, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: 'MySQL failed',
+                    response: err
+                });
+                res.end();
+            } else {
+                self.insertVaccines();
+            }
+        });
+    };
+
+    self.insertVaccines = function () {
+        var userData = res.locals;
+        var vaccineId = JSON.parse(req.body.vaccines);
+        self.vaccinesData = "";
+        for (var i in vaccineId) {
+            var query = "(" + userData.pet_id + ", " + vaccineId[i] + ", CURRENT_TIMESTAMP())";
+            if (vaccineId.length - 1 != i) {
+                self.vaccinesData = self.vaccinesData + query + ", ";
+            } else {
+                self.vaccinesData = self.vaccinesData + query;
+            }
+
+        }
+        var insertVaccines = "INSERT INTO `have_vaccines`(`id_pet`, `id_vaccine`, `added_at`) VALUES " + self.vaccinesData;
+
+        db.query(insertVaccines, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: 'MySQL failed',
+                    response: err
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: '',
+                    response: 'Vaccine inserted'
+                });
+                res.end();
+            }
+        });
+    };
+};
+
