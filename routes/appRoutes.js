@@ -5,6 +5,7 @@ module.exports = function(app) {
     var user = require('../controllers/userController');
     var pet = require('../controllers/petController');
     var location = require('../controllers/locationController');
+    var vaccine = require('../controllers/vaccineController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -22,6 +23,9 @@ module.exports = function(app) {
     app.post('/create_profile', isAuthenticate.verify, user.createUserProf );
 
     app.post('/create_pet', isAuthenticate.verify, pet.createPet );
+
+   // app.post('/create_vaccine', isAuthenticate.verify, pet.createVaccine);
+    app.get('/vaccines/:variant', isAuthenticate.verify, vaccine.vaccines);
 
     //app.post('/update_pet', isAuthenticate.verify, pet.updatePet );
 
