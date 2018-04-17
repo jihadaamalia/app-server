@@ -6,6 +6,7 @@ module.exports = function(app) {
     var pet = require('../controllers/petController');
     var location = require('../controllers/locationController');
     var vaccine = require('../controllers/vaccineController');
+    var match = require('../controllers/matchController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -32,5 +33,8 @@ module.exports = function(app) {
     //get location
     app.get('/provinces', isAuthenticate.verify, location.provinces); //get province
     app.get('/provinces/:prov_id', isAuthenticate.verify, location.cities); //get city by province
+
+    //matched pet timeline
+    app.get('/matched_pet', isAuthenticate.verify, match.matchedPet)
 };
   
