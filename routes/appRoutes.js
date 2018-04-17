@@ -24,7 +24,7 @@ module.exports = function(app) {
     app.post('/create_profile', isAuthenticate.verify, user.createUserProf );
     app.post('/create_pet', isAuthenticate.verify, pet.createPet );
     app.post('/create_vaccine', isAuthenticate.verify, pet.createVaccine);
-    app.post('/create_vaccine', isAuthenticate.verify, pet.matchPreference);
+    app.post('/create_preference', isAuthenticate.verify, pet.matchPreference);
 
     //get vaccine
     app.get('/vaccines/:variant', isAuthenticate.verify, vaccine.vaccines);

@@ -80,32 +80,6 @@ module.exports.createPet = function (req, res) {
             }
         });
     };
-
-    self.updateFirstLogin = function () {
-        var firstLogin = "UPDATE `user` SET `first_login` = 0 WHERE `username` = '" + userData.username + "'";
-
-        db.query(firstLogin, function(err, results) {
-            if (err) {
-                res.json({
-                    status: 200,
-                    error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
-                });
-                res.end();
-            } else {
-                res.json({
-                    status: 200,
-                    error: true,
-                    error_msg: '',
-                    response: 'Pet created!'
-                });
-                res.end();
-            }
-        });
-
-
-    };
 };
 
 module.exports.createVaccine = function (req, res) {
@@ -182,5 +156,72 @@ module.exports.createVaccine = function (req, res) {
             }
         });
     };
+};
+
+module.exports.matchPreference = function (req, res) {
+    var self = this;
+    var userData = res.locals;
+    var petData = req.body;
+    var getId = "SELECT pet.user_id, pet.id FROM `pet` INNER JOIN `user_profile` ON pet.user_id = user_profile.id WHERE user_profile.username = '" + userData.username + "'";
+
+    db.query(getId, function(err, results) {
+        if (err) {
+            res.json({
+                status: 200,
+                error: true,
+                error_msg: 'MySQL failed',
+                response: err
+            });
+            res.end();
+        } else {
+            userData.user_id = results[0].user_id;
+            userData.pet_id = results[0].id;
+
+            self.insertPreference ();
+        }
+    });
+
+    self.insertPreference = function () {
+        var insertPref = "UPDATE `pet` SET `breed_pref` = '" + petData.breed_pref + "', `age_min` = '" + petData.age_min + "', `age_max` = '" + petData.age_max + "', `city_pref` = '" + petData.city_pref + "', updated_at = CURRENT_TIMESTAMP() WHERE `id` = '" + userData.pet_id + "'";
+
+        db.query(insertPref, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: 'MySQL failed',
+                    response: err
+                });
+                res.end();
+            } else {
+                self.updateFirstLogin ();
+            }
+        });
+    };
+
+    self.updateFirstLogin = function () {
+        var firstLogin = "UPDATE `user` SET `first_login` = 0 WHERE `username` = '" + userData.username + "'";
+
+        db.query(firstLogin, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: 'MySQL failed',
+                    response: err
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: true,
+                    error_msg: '',
+                    response: 'Pet created!'
+                });
+                res.end();
+            }
+        });
+    };
+
 };
 
