@@ -25,7 +25,7 @@ module.exports.createPet = function (req, res) {
 
     self.createPetFunc = function (idUser) {
         var checkPet = "SELECT `id` FROM `pet` WHERE `user_id` = '" + idUser + "'";
-        var createPet = "INSERT INTO `pet`(`pet_name`,`pet_dob`,`pet_sex`, `furcolor`, `weight`, `breed`, `pet_photo`, `pet_desc`, `user_id`, `added_at`) VALUES ('" + petData.name + "', '" + petData.pet_dob + "', '" + petData.pet_sex + "', '" + petData.furcolor + "', '" + petData.weight + "', '" + petData.breed + "', '" + petData.pet_photo + "', '" + petData.pet_desc + "', '" + idUser + "', CURRENT_TIMESTAMP())";
+        var createPet = "INSERT INTO `pet`(`pet_name`,`pet_dob`,`pet_sex`, `furcolor`, `weight`, `breed`, `pet_photo`, `breed_cert`, `pet_desc`, `user_id`, `added_at`) VALUES ('" + petData.name + "', '" + petData.pet_dob + "', '" + petData.pet_sex + "', '" + petData.furcolor + "', '" + petData.weight + "', '" + petData.breed + "', '" + petData.pet_photo + "', '" + petData.breed_cert + "', '" + petData.pet_desc + "', '" + idUser + "', CURRENT_TIMESTAMP())";
         var updatePet = "UPDATE `pet` SET `pet_name` = '" + petData.name + "',`pet_dob` = '" + petData.pet_dob + "',`pet_sex` = '" + petData.pet_sex + "', `furcolor` = '" + petData.furcolor + "', `weight` = '" + petData.weight + "', `breed` = '" + petData.breed + "', `pet_photo` = '" + petData.pet_photo + "', `pet_desc` = '" + petData.pet_desc + "', `updated_at` = CURRENT_TIMESTAMP() WHERE `user_id` = '" + idUser + "'";
 
         db.query(checkPet, function(err, result) {
