@@ -12,10 +12,13 @@ module.exports.createPet = function (req, res) {
     db.query(getUserId, function(err, results) {
         if (err || results.length < 1) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'Error retrieving data',
-                response: err
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else {
@@ -31,20 +34,26 @@ module.exports.createPet = function (req, res) {
         db.query(checkPet, function(err, result) {
             if (err) {
                 res.json({
-                    status: 200,
+                    status: 500,
                     error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
+                    error_msg: {
+                        title: 'Failed to fetch data',
+                        detail: err
+                    },
+                    response: ''
                 });
                 res.end();
             } else if (result[0]){
                 db.query(updatePet, function(err, results) {
                     if (err) {
                         res.json({
-                            status: 200,
+                            status: 500,
                             error: true,
-                            error_msg: 'MySQL failed',
-                            response: err
+                            error_msg: {
+                                title: 'Failed to insert data',
+                                detail: err
+                            },
+                            response: ''
                         });
                         res.end();
                     } else {
@@ -52,7 +61,7 @@ module.exports.createPet = function (req, res) {
                             status: 200,
                             error: false,
                             error_msg: '',
-                            response: 'Pet updated'
+                            response: 'Pet updated!'
                         });
                         res.end();
                     }
@@ -61,18 +70,24 @@ module.exports.createPet = function (req, res) {
                 db.query(createPet, function(err, results) {
                     if (err) {
                         res.json({
-                            status: 200,
+                            status: 500,
                             error: true,
-                            error_msg: 'MySQL failed',
-                            response: err
+                            error_msg: {
+                                title: 'Failed to insert data',
+                                detail: err
+                            },
+                            response: ''
                         });
                         res.end();
                     } else {
                         res.json({
                             status: 200,
                             error: false,
-                            error_msg: '',
-                            response: 'Pet created'
+                            error_msg: {
+                                title: '',
+                                detail: ''
+                            },
+                            response: 'Pet created!'
                         });
                         res.end();
                     }
@@ -90,10 +105,13 @@ module.exports.createVaccine = function (req, res) {
     db.query(getId, function(err, results) {
         if (err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'MySQL failed',
-                response: err
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else {
@@ -109,10 +127,13 @@ module.exports.createVaccine = function (req, res) {
         db.query(deleteExisting, function(err, results) {
             if (err) {
                 res.json({
-                    status: 200,
+                    status: 500,
                     error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
+                    error_msg: {
+                        title: 'Failed to update data',
+                        detail: err
+                    },
+                    response: ''
                 });
                 res.end();
             } else {
@@ -139,17 +160,23 @@ module.exports.createVaccine = function (req, res) {
         db.query(insertVaccines, function(err, results) {
             if (err) {
                 res.json({
-                    status: 200,
+                    status: 500,
                     error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
+                    error_msg: {
+                        title: 'Failed to insert data',
+                        detail: err
+                    },
+                    response: ''
                 });
                 res.end();
             } else {
                 res.json({
                     status: 200,
                     error: false,
-                    error_msg: '',
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
                     response: 'Vaccine inserted'
                 });
                 res.end();
@@ -167,10 +194,13 @@ module.exports.matchPreference = function (req, res) {
     db.query(getId, function(err, results) {
         if (err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'MySQL failed',
-                response: err
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else {
@@ -187,10 +217,13 @@ module.exports.matchPreference = function (req, res) {
         db.query(insertPref, function(err, results) {
             if (err) {
                 res.json({
-                    status: 200,
+                    status: 500,
                     error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
+                    error_msg: {
+                        title: 'Failed to update data',
+                        detail: err
+                    },
+                    response: ''
                 });
                 res.end();
             } else {
@@ -205,18 +238,24 @@ module.exports.matchPreference = function (req, res) {
         db.query(firstLogin, function(err, results) {
             if (err) {
                 res.json({
-                    status: 200,
+                    status: 500,
                     error: true,
-                    error_msg: 'MySQL failed',
-                    response: err
+                    error_msg: {
+                        title: 'Failed to update data',
+                        detail: err
+                    },
+                    response: ''
                 });
                 res.end();
             } else {
                 res.json({
                     status: 200,
-                    error: true,
-                    error_msg: '',
-                    response: 'Pet created!'
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: 'Preference created!'
                 });
                 res.end();
             }
@@ -232,10 +271,13 @@ module.exports.getPetInfo = function(req, res){
     var query = db.query(petInfo, function(err, results){
         if(err){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: 'Failed fetching data',
-                response: err
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -255,7 +297,10 @@ module.exports.getPetInfo = function(req, res){
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: self.resData
             });
             res.end();
@@ -268,18 +313,24 @@ module.exports.getPetVaccine = function(req, res){
     var query = db.query(getVaccines, function(err, result){
         if(err){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: 'Failed fetching data',
-                response: err
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
         else if(result){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: '',
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: {
                     vaccines: result
                 }

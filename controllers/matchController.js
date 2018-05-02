@@ -7,10 +7,13 @@ module.exports.matchedPet = function(req, res){
     var query = db.query(petOption, function(err, results){
         if(err){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: 'Failed fetching data',
-                response: err
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -59,10 +62,14 @@ module.exports.matchedPet = function(req, res){
         res.json({
             status: 200,
             error: false,
-            error_msg: '',
+            error_msg: {
+                title: '',
+                detail: ''
+            },
             response: {
                 matchedPet : self.matchedResult
             }
+
         });
         res.end();
     }

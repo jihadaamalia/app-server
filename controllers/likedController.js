@@ -5,10 +5,13 @@ module.exports.insertLiked = function(req, res){
     var query = db.query(insertLiked, function(err, results){
         if(err){
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'Failed fetching data',
-                response: err
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -16,7 +19,10 @@ module.exports.insertLiked = function(req, res){
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: 'like status added'
             });
             res.end();
@@ -32,10 +38,13 @@ module.exports.getLikedPet = function(req, res){
     var query = db.query(getLiked, function(err, results){
         if(err){
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'Failed fetching data',
-                response: err
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -79,7 +88,10 @@ module.exports.getLikedPet = function(req, res){
         res.json({
             status: 200,
             error: false,
-            error_msg: '',
+            error_msg: {
+                title: '',
+                detail: ''
+            },
             response: {
                 matchedPet : self.likePetList
             }

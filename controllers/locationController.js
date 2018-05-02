@@ -3,10 +3,13 @@ exports.provinces=function(req, res){
     var query = db.query(provinces_sql, function(err, result){
         if (err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'Failed fetching data',
-                response: err
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -14,7 +17,10 @@ exports.provinces=function(req, res){
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: {
                     provinces: result
                 }
@@ -29,10 +35,13 @@ exports.cities=function(req, res){
     var query = db.query(cities_sql, function(err, result){
         if(err){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: 'Failed fetching data',
-                response: err
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -40,7 +49,10 @@ exports.cities=function(req, res){
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: {
                     cities: result
                 }

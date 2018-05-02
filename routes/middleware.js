@@ -15,10 +15,13 @@ exports.verify = function(req , res, next){
     jwt.verify(token, secret, { algorithms: 'HS256', audience: 'TEST' }, function(err, decoded) {
         if (err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'Failed decode JWT',
-                response: err
+                error_msg: {
+                    title: 'Failed decode JWT',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else if (!err) {

@@ -3,10 +3,13 @@ module.exports.vaccines = function(req, res){
     var query = db.query(getVaccines, function(err, result){
         if(err){
             res.json({
-                status: 200,
-                error: false,
-                error_msg: 'Failed fetching data',
-                response: err
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         }
@@ -14,7 +17,10 @@ module.exports.vaccines = function(req, res){
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: {
                     vaccines: result
                 }

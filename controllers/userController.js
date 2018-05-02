@@ -9,10 +9,13 @@ module.exports.createUserProf = function (req, res) { //step 1 of user registrat
     db.query(checkDataSql, function(err, result){
         if(err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'MySQL failed',
-                response: err
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else if (result[0]) { //if data has created
@@ -21,17 +24,23 @@ module.exports.createUserProf = function (req, res) { //step 1 of user registrat
             db.query(updateUserProfile, function(err, result){
                 if(err) {
                     res.json({
-                        status: 200,
+                        status: 500,
                         error: true,
-                        error_msg: 'MySQL failed',
-                        response: err
+                        error_msg: {
+                            title: 'Failed to update data',
+                            detail: err
+                        },
+                        response: ''
                     });
                     res.end();
                 } else {
                     res.json({
                         status: 200,
                         error: false,
-                        error_msg: '',
+                        error_msg: {
+                            title: '',
+                            detail: ''
+                        },
                         response: 'User profile updated!'
                     });
                     res.end();
@@ -42,17 +51,23 @@ module.exports.createUserProf = function (req, res) { //step 1 of user registrat
             db.query(createUserProfile, function(err, result){
                 if(err) {
                     res.json({
-                        status: 200,
+                        status: 500,
                         error: true,
-                        error_msg: 'MySQL failed',
-                        response: err
+                        error_msg: {
+                            title: 'Failed to insert data',
+                            detail: err
+                        },
+                        response: ''
                     });
                     res.end();
                 } else {
                     res.json({
                         status: 200,
                         error: false,
-                        error_msg: '',
+                        error_msg: {
+                            title: '',
+                            detail: ''
+                        },
                         response: 'User profile created!'
                     });
                     res.end();
@@ -69,17 +84,23 @@ module.exports.getUserProf = function (req, res) { //step 1 of user registration
     db.query(getUserProfile, function(err, result){
         if(err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'MySQL failed',
-                response: err
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else {
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: result
             });
             res.end();
@@ -93,17 +114,23 @@ module.exports.updateUserProf = function (req, res) {
     db.query(updateUserProfile, function(err, result){
         if(err) {
             res.json({
-                status: 200,
+                status: 500,
                 error: true,
-                error_msg: 'MySQL failed',
-                response: err
+                error_msg: {
+                    title: 'Failed to update data',
+                    detail: err
+                },
+                response: ''
             });
             res.end();
         } else {
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: 'User profile updated!'
             });
             res.end();
