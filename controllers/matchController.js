@@ -1,5 +1,7 @@
 module.exports.matchedPet = function(req, res){
-    var self = this;
+    var self = this
+
+    self.paginate = req.query;
 
     var petOption  = "SELECT pet.id, pet.pet_name, pet.pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user_profile.username, user_profile.user_dob, user_profile.photo, user_profile.sex, regencies.name AS city, provinces.name AS provinces FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant WHERE pet.id <> '"+res.locals.pet_id+"'";
 
@@ -50,12 +52,17 @@ module.exports.matchedPet = function(req, res){
             }
         };
 
+        // slice(begin, end) note: end not included
+        self.paginate.end = self.paginate.start + self.paginate.size;
+
+        self.matchedResult = self.matchedSorted.slice(self.paginate.start, self.paginate.end)
+
         res.json({
             status: 200,
             error: false,
             error_msg: '',
             response: {
-                matchedPet : self.matchedSorted
+                matchedPet : self.matchedResult
             }
         });
         res.end();
