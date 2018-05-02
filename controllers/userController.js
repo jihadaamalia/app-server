@@ -62,3 +62,51 @@ module.exports.createUserProf = function (req, res) { //step 1 of user registrat
     });
 
 };
+
+
+module.exports.getUserProf = function (req, res) { //step 1 of user registration data
+    var getUserProfile = "SELECT user_profile.name, user_profile.username, user_profile.user_dob, user_profile.photo, user_profile.sex, regencies.name AS city, provinces.name AS provinces FROM `user_profile` JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id WHERE user_profile.id = '"+res.locals.user_id+"'";
+    db.query(getUserProfile, function(err, result){
+        if(err) {
+            res.json({
+                status: 200,
+                error: true,
+                error_msg: 'MySQL failed',
+                response: err
+            });
+            res.end();
+        } else {
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: result
+            });
+            res.end();
+        }
+    });
+};
+
+module.exports.updateUserProf = function (req, res) {
+    var userData = req.body;
+    var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `username` = '" + res.locals.username + "'";
+    db.query(updateUserProfile, function(err, result){
+        if(err) {
+            res.json({
+                status: 200,
+                error: true,
+                error_msg: 'MySQL failed',
+                response: err
+            });
+            res.end();
+        } else {
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: 'User profile updated!'
+            });
+            res.end();
+        }
+    });
+};

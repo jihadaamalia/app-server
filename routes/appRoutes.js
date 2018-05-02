@@ -38,7 +38,11 @@ module.exports = function(app) {
     //matched pet timeline
     app.get('/matched_pet', isAuthenticate.verify, match.matchedPet);
     app.post('/create_liked', isAuthenticate.verify, liked.insertLiked);
+
+    //get liked pet data
     app.get('/get_liked', isAuthenticate.verify, liked.getLikedPet);
 
+    //my profile
+    app.get('/user_profile', isAuthenticate.verify, user.getUserProf);
 };
   
