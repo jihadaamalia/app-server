@@ -225,3 +225,28 @@ module.exports.matchPreference = function (req, res) {
 
 };
 
+module.exports.getPetInfo = function(req, res){
+    var petInfo  = "SELECT pet.id, pet.pet_name, pet.pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc FROM `pet` JOIN breeds ON breeds.id = pet.breed JOIN variants ON variants.id = breeds.variant WHERE pet.user_id = '"+res.locals.user_id+"'";
+
+    var query = db.query(petInfo, function(err, results){
+        if(err){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: 'Failed fetching data',
+                response: err
+            });
+            res.end();
+        }
+        else if(results[0]){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: results
+            });
+            res.end();
+        }
+    });
+};
+
