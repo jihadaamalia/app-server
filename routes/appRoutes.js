@@ -44,6 +44,9 @@ module.exports = function(app) {
 
     //my profile
     app.get('/user_profile', isAuthenticate.verify, user.getUserProf);
-    app.get('/pet', isAuthenticate.verify, pet.getPetInfo);
+    app.get('/pet', isAuthenticate.verify, pet.getPetInfo); //pet general info + vaccines
+    app.get('/pet_vaccine', isAuthenticate.verify, pet.getPetVaccine);
+
+    //setting
 };
   
