@@ -1,6 +1,5 @@
 module.exports.insertLiked = function(req, res){
     var self = this;
-    console.log(req.body)
 
     var insertLiked = "INSERT INTO `liked`(`from`, `to`, `like_stat`, `added_at`) VALUES ('"+res.locals.pet_id+"', '"+req.body.liked_pet+"', '"+req.body.liked_status+"', CURRENT_TIMESTAMP())";
     var query = db.query(insertLiked, function(err, results){
@@ -27,9 +26,9 @@ module.exports.insertLiked = function(req, res){
 
 module.exports.getLikedPet = function(req, res){
     var self = this;
-    console.log(req.body)
 
     var getLiked = "SELECT pet.id, pet.pet_name, pet.pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user_profile.username, user_profile.user_dob, user_profile.photo, user_profile.sex, regencies.name AS city, provinces.name AS provinces FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant JOIN liked ON pet.id = liked.to WHERE liked.from = '"+res.locals.pet_id+"' AND liked.like_stat = 1";
+
     var query = db.query(getLiked, function(err, results){
         if(err){
             res.json({
