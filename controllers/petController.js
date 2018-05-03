@@ -308,35 +308,3 @@ module.exports.getPetInfo = function(req, res){
     }
 };
 
-module.exports.getPetVaccine = function(req, res){
-    var getVaccines = "SELECT id_vaccine FROM `have_vaccines` WHERE id_pet ='"+res.locals.pet_id+"'";
-    var query = db.query(getVaccines, function(err, result){
-        if(err){
-            res.json({
-                status: 500,
-                error: true,
-                error_msg: {
-                    title: 'Failed to fetch data',
-                    detail: err
-                },
-                response: ''
-            });
-            res.end();
-        }
-        else if(result){
-            res.json({
-                status: 500,
-                error: true,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: {
-                    vaccines: result
-                }
-            });
-            res.end();
-        }
-    });
-};
-
