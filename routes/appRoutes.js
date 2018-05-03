@@ -54,7 +54,7 @@ module.exports = function(app) {
     app.post('/setting/vaccine', isAuthenticate.verify, pet.updateVaccine);
 
     //setting account
-    app.post('/setting/user', isAuthenticate.verify, user.updateUser);
+    app.post('/setting/user', isAuthenticate.verify, setting.updateUser);
     app.post('/setting/change_password', isAuthenticate.verify, setting.changePass);
 
 
