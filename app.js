@@ -9,6 +9,7 @@ var cors = require('cors');
 var app = express();
 var bodyParser=require("body-parser");
 var mysql    = require('mysql');
+var isAuthenticate = require('./routes/middleware');
 require('dotenv').config();
 
 /**
@@ -65,6 +66,8 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+app.use(isAuthenticate.verify);
 
 /**
  * routes.
