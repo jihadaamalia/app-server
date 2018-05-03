@@ -8,6 +8,7 @@ module.exports = function(app) {
     var vaccine = require('../controllers/vaccineController');
     var match = require('../controllers/matchController');
     var liked = require('../controllers/likedController');
+    var setting = require('../controllers/settingController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -53,8 +54,8 @@ module.exports = function(app) {
     app.post('/setting/vaccine', isAuthenticate.verify, pet.updateVaccine);
 
     //setting account
-
     app.post('/setting/user', isAuthenticate.verify, user.updateUser);
+    app.post('/setting/change_password', isAuthenticate.verify, setting.changePass);
 
 
 };
