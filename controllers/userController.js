@@ -112,7 +112,7 @@ module.exports.updateUserProf = function (req, res) {
     var userData = req.body;
     var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `username` = '" + res.locals.username + "'";
     db.query(updateUserProfile, function(err, result){
-        if(err) {
+        if(err || result.affectedRows == 0) {
             res.json({
                 status: 500,
                 error: true,
