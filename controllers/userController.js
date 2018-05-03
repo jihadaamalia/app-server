@@ -107,33 +107,5 @@ module.exports.getUserProf = function (req, res) { //step 1 of user registration
     });
 };
 
-module.exports.updateUserProf = function (req, res) {
-    var userData = req.body;
-    var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `username` = '" + res.locals.username + "'";
-    db.query(updateUserProfile, function(err, result){
-        if(err || result.affectedRows === 0) {
-            res.json({
-                status: 500,
-                error: true,
-                error_msg: {
-                    title: 'Failed to update data',
-                    detail: err
-                },
-                response: ''
-            });
-            res.end();
-        } else {
-            res.json({
-                status: 200,
-                error: false,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: 'User profile updated!'
-            });
-            res.end();
-        }
-    });
-};
+
 

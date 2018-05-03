@@ -48,10 +48,10 @@ module.exports = function(app) {
     app.get('/pet', isAuthenticate.verify, pet.getPet); //pet general info + vaccines
 
     //setting
-    app.post('/setting/user_profile', isAuthenticate.verify, user.updateUserProf );
-    app.post('/setting/pet', isAuthenticate.verify, pet.updatePet );
-    app.post('/setting/preference', isAuthenticate.verify, pet.updatePreference);
-    app.post('/setting/vaccine', isAuthenticate.verify, pet.updateVaccine);
+    app.post('/setting/user_profile', isAuthenticate.verify, setting.updateUserProf );
+    app.post('/setting/pet', isAuthenticate.verify, setting.updatePet );
+    app.post('/setting/preference', isAuthenticate.verify, setting.updatePreference);
+    app.post('/setting/vaccine', isAuthenticate.verify, setting.updateVaccine);
 
     //setting account
     app.post('/setting/user', isAuthenticate.verify, setting.updateUser);
