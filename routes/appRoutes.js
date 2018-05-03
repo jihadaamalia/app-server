@@ -23,10 +23,10 @@ module.exports = function(app) {
     });
 
     //register
-    app.post('/create_profile', isAuthenticate.verify, register.createUserProf );
-    app.post('/create_pet', isAuthenticate.verify, register.createPet );
-    app.post('/create_vaccine', isAuthenticate.verify, register.createVaccine);
-    app.post('/create_preference', isAuthenticate.verify, register.matchPreference);
+    app.post('/register/user-profile', isAuthenticate.verify, register.createUserProf );
+    app.post('/register/pet', isAuthenticate.verify, register.createPet );
+    app.post('/register/vaccine', isAuthenticate.verify, register.createVaccine);
+    app.post('/register/preference', isAuthenticate.verify, register.matchPreference);
 
     //get vaccine
     app.get('/vaccines/:variant', isAuthenticate.verify, vaccine.vaccines);
@@ -36,15 +36,15 @@ module.exports = function(app) {
     app.get('/provinces/:prov_id', isAuthenticate.verify, location.cities); //get city by province
 
     //matched pet timeline
-    app.get('/matched_pet', isAuthenticate.verify, match.matchedPet);
-    app.post('/create_liked', isAuthenticate.verify, match.insertLiked);
+    app.get('/matched/pet', isAuthenticate.verify, match.matchedPet);
+    app.post('/matched/liked', isAuthenticate.verify, match.insertLiked);
 
     //get liked pet data
-    app.get('/get_liked', isAuthenticate.verify, match.getLikedPet);
+    app.get('/matched/liked', isAuthenticate.verify, match.getLikedPet);
 
     //my profile
-    app.get('/user_profile', isAuthenticate.verify, profile.getUserProf);
-    app.get('/pet', isAuthenticate.verify, profile.getPet); //pet general info + vaccines
+    app.get('/profile/user-profile', isAuthenticate.verify, profile.getUserProf);
+    app.get('/profile/pet', isAuthenticate.verify, profile.getPet); //pet general info + vaccines
 
     //setting
     app.post('/setting/user_profile', isAuthenticate.verify, setting.updateUserProf );
@@ -55,7 +55,6 @@ module.exports = function(app) {
     //setting account
     app.post('/setting/user', isAuthenticate.verify, setting.updateUser);
     app.post('/setting/change_password', isAuthenticate.verify, setting.changePass);
-
 
 };
   
