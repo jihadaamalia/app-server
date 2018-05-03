@@ -47,9 +47,10 @@ module.exports = function(app) {
     app.get('/pet', isAuthenticate.verify, pet.getPet); //pet general info + vaccines
 
     //setting
-    app.post('/user_profile/setting', isAuthenticate.verify, user.updateUserProf );
-    app.post('/pet/setting', isAuthenticate.verify, pet.updatePet );
+    app.post('/setting/user_profile', isAuthenticate.verify, user.updateUserProf );
+    app.post('/setting/pet', isAuthenticate.verify, pet.updatePet );
+    app.post('/setting/preference', isAuthenticate.verify, pet.updatePreference);
     // app.post('/setting/vaccine', isAuthenticate.verify, pet.createVaccine);
-    // app.post('/setting/preference', isAuthenticate.verify, pet.matchPreference);
+
 };
   
