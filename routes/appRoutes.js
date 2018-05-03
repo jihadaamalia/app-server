@@ -8,6 +8,7 @@ module.exports = function(app) {
     var vaccine = require('../controllers/vaccineController');
     var match = require('../controllers/matchController');
     var liked = require('../controllers/likedController');
+    var register = require('../controllers/registerController');
     var setting = require('../controllers/settingController');
 
     app.get('/', function(req,res){
@@ -24,10 +25,10 @@ module.exports = function(app) {
     });
 
     //register
-    app.post('/create_profile', isAuthenticate.verify, user.createUserProf );
-    app.post('/create_pet', isAuthenticate.verify, pet.createPet );
-    app.post('/create_vaccine', isAuthenticate.verify, pet.createVaccine);
-    app.post('/create_preference', isAuthenticate.verify, pet.matchPreference);
+    app.post('/create_profile', isAuthenticate.verify, register.createUserProf );
+    app.post('/create_pet', isAuthenticate.verify, register.createPet );
+    app.post('/create_vaccine', isAuthenticate.verify, register.createVaccine);
+    app.post('/create_preference', isAuthenticate.verify, register.matchPreference);
 
     //get vaccine
     app.get('/vaccines/:variant', isAuthenticate.verify, vaccine.vaccines);
