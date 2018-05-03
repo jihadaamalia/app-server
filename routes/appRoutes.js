@@ -7,7 +7,6 @@ module.exports = function(app) {
     var location = require('../controllers/locationController');
     var vaccine = require('../controllers/vaccineController');
     var match = require('../controllers/matchController');
-    var liked = require('../controllers/likedController');
     var register = require('../controllers/registerController');
     var setting = require('../controllers/settingController');
 
@@ -39,10 +38,10 @@ module.exports = function(app) {
 
     //matched pet timeline
     app.get('/matched_pet', isAuthenticate.verify, match.matchedPet);
-    app.post('/create_liked', isAuthenticate.verify, liked.insertLiked);
+    app.post('/create_liked', isAuthenticate.verify, match.insertLiked);
 
     //get liked pet data
-    app.get('/get_liked', isAuthenticate.verify, liked.getLikedPet);
+    app.get('/get_liked', isAuthenticate.verify, match.getLikedPet);
 
     //my profile
     app.get('/user_profile', isAuthenticate.verify, user.getUserProf);
