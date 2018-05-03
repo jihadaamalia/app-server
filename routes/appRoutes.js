@@ -50,7 +50,12 @@ module.exports = function(app) {
     app.post('/setting/user_profile', isAuthenticate.verify, user.updateUserProf );
     app.post('/setting/pet', isAuthenticate.verify, pet.updatePet );
     app.post('/setting/preference', isAuthenticate.verify, pet.updatePreference);
-    // app.post('/setting/vaccine', isAuthenticate.verify, pet.createVaccine);
+    app.post('/setting/vaccine', isAuthenticate.verify, pet.updateVaccine);
+
+    //setting account
+
+    app.post('/setting/user', isAuthenticate.verify, user.updateUser);
+
 
 };
   

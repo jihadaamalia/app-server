@@ -368,3 +368,69 @@ module.exports.updatePreference = function(req, res) {
 
 };
 
+module.exports.updateVaccine = function (req, res) {
+    var self = this;
+    var userData = res.locals;
+
+    var deleteExisting = "DELETE FROM `have_vaccines` WHERE `id_pet` = '" + userData.pet_id + "'";
+    db.query(deleteExisting, function(err, results) {
+        if (err) {
+            res.json({
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to update data',
+                    detail: err
+                },
+                response: ''
+            });
+            res.end();
+        } else {
+            self.insertVaccines();
+        }
+    });
+
+
+    self.insertVaccines = function () {
+        var userData = res.locals;
+        var vaccineId = JSON.parse(req.body.vaccines);
+        self.vaccinesData = "";
+        for (var i in vaccineId) {
+            var query = "(" + userData.pet_id + ", " + vaccineId[i] + ", CURRENT_TIMESTAMP())";
+            if (vaccineId.length - 1 != i) {
+                self.vaccinesData = self.vaccinesData + query + ", ";
+            } else {
+                self.vaccinesData = self.vaccinesData + query;
+            }
+
+        }
+        var insertVaccines = "INSERT INTO `have_vaccines`(`id_pet`, `id_vaccine`, `added_at`) VALUES " + self.vaccinesData;
+
+        db.query(insertVaccines, function(err, results) {
+            console.log(results)
+            if (err) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to insert data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: 'Vaccine inserted'
+                });
+                res.end();
+            }
+        });
+    };
+};
