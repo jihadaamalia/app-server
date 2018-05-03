@@ -2,13 +2,12 @@
 
 module.exports = function(app) {
     var isAuthenticate = require('./middleware');
-    var user = require('../controllers/userController');
-    var pet = require('../controllers/petController');
     var location = require('../controllers/locationController');
     var vaccine = require('../controllers/vaccineController');
     var match = require('../controllers/matchController');
     var register = require('../controllers/registerController');
     var setting = require('../controllers/settingController');
+    var profile = require('../controllers/profileController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -44,8 +43,8 @@ module.exports = function(app) {
     app.get('/get_liked', isAuthenticate.verify, match.getLikedPet);
 
     //my profile
-    app.get('/user_profile', isAuthenticate.verify, user.getUserProf);
-    app.get('/pet', isAuthenticate.verify, pet.getPet); //pet general info + vaccines
+    app.get('/user_profile', isAuthenticate.verify, profile.getUserProf);
+    app.get('/pet', isAuthenticate.verify, profile.getPet); //pet general info + vaccines
 
     //setting
     app.post('/setting/user_profile', isAuthenticate.verify, setting.updateUserProf );
