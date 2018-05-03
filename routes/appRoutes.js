@@ -46,7 +46,7 @@ module.exports = function(app) {
     app.get('/profile/pet', profile.getPet); //pet general info + vaccines
 
     //setting
-    app.post('/setting/user_profile', setting.updateUserProf );
+    app.post('/setting/user-profile', setting.updateUserProf );
     app.post('/setting/pet', setting.updatePet );
     app.post('/setting/preference', setting.updatePreference);
     app.post('/setting/vaccine', setting.updateVaccine);
