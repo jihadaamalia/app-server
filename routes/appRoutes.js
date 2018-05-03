@@ -53,7 +53,7 @@ module.exports = function(app) {
 
     //setting account
     app.post('/setting/user', setting.updateUser);
-    app.post('/setting/change_password', setting.changePass);
+    app.post('/setting/change-password', setting.changePass);
 
 };
   

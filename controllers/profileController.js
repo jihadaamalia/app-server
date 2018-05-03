@@ -53,8 +53,8 @@ module.exports.getPet = function(req, res){
     self.getVaccines = function () {
         var getVaccines = "SELECT vaccines.id, vaccines.name FROM have_vaccines JOIN vaccines ON have_vaccines.id_vaccine = vaccines.id WHERE id_pet ='"+res.locals.pet_id+"'";
         var query = db.query(getVaccines, function(err, result){
-            if(result[0]){
-                self.resData.vaccines = result[0]
+            if(result){
+                self.resData.vaccines = result
             }
 
             res.json({
