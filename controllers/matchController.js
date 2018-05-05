@@ -38,6 +38,7 @@ module.exports.matchedPet = function(req, res){
                 pet_photo : results[i].pet_photo,
                 breed_cert : results[i].breed_cert,
                 pet_desc : results[i].pet_desc,
+                vaccines : [],
                 user_data : {
                     user_id : results[i].user_id,
                     name : results[i].name,
@@ -146,6 +147,7 @@ module.exports.getLikedPet = function(req, res){
                 pet_photo : results[i].pet_photo,
                 breed_cert : results[i].breed_cert,
                 pet_desc : results[i].pet_desc,
+                vaccines : [],
                 user_data : {
                     user_id : results[i].user_id,
                     name : results[i].name,
