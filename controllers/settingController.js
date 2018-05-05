@@ -51,13 +51,13 @@ module.exports.updateUser = function(req , res){
                 } else {
                     res.header();
                     res.json({
-                        status: 500,
-                        error: true,
+                        status: 200,
+                        error: false,
                         error_msg: {
-                            title: 'Username updated!',
+                            title: '',
                             detail: ''
                         },
-                        response: ''
+                        response: 'Username updated!'
                     });
                     res.end();
                 };
