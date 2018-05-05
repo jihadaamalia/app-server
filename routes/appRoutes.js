@@ -7,6 +7,7 @@ module.exports = function(app) {
     var register = require('../controllers/registerController');
     var setting = require('../controllers/settingController');
     var profile = require('../controllers/profileController');
+    var pet = require('../controllers/petController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -26,6 +27,9 @@ module.exports = function(app) {
     app.post('/register/pet', register.createPet );
     app.post('/register/vaccine', register.createVaccine);
     app.post('/register/preference', register.matchPreference);
+
+    //get vaccine
+    app.get('/breeds/:variant', pet.breeds);
 
     //get vaccine
     app.get('/vaccines/:variant', vaccine.vaccines);
