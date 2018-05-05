@@ -18,7 +18,6 @@ module.exports.matchedPet = function(req, res){
             res.end();
         }
         else if(results){
-            console.log(results)
             self.sortMatched (results)
         }
     });

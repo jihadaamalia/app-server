@@ -299,7 +299,6 @@ module.exports.updateVaccine = function (req, res) {
         var insertVaccines = "INSERT INTO `have_vaccines`(`id_pet`, `id_vaccine`, `added_at`) VALUES " + self.vaccinesData;
 
         db.query(insertVaccines, function(err, results) {
-            console.log(results)
             if (err) {
                 res.json({
                     status: 500,
