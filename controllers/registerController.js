@@ -5,7 +5,7 @@ require('dotenv').config();
 
 module.exports.createUserProf = function (req, res) { //step 1 of user registration data
     var userData = req.body;
-    var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `username_id` = '" + res.locals.username_id + "'";
+    var updateUserProfile = "UPDATE `user_profile` SET `name` = '" + userData.name + "', `user_dob` = '" + userData.user_dob + "', `sex` = '" + userData.sex + "', `photo` = '" + userData.photo + "', `city` = '" + userData.city + "', updated_at = CURRENT_TIMESTAMP() WHERE `id` = '" + res.locals.user_id + "'";
     db.query(updateUserProfile, function(err, result){
         if(err) {
             res.json({
@@ -38,93 +38,30 @@ module.exports.createPet = function (req, res) {
     var petData = req.body;
     var userData = res.locals;
 
-    var getUserId = "SELECT id FROM `user_profile` WHERE `username`= '" + userData.username + "'";
-    db.query(getUserId, function(err, results) {
-        if (err || results.length < 1) {
+    var updatePet = "UPDATE `pet` SET `pet_name` = '" + petData.name + "',`pet_dob` = '" + petData.pet_dob + "',`pet_sex` = '" + petData.pet_sex + "', `furcolor` = '" + petData.furcolor + "', `weight` = '" + petData.weight + "', `breed` = '" + petData.breed + "', `pet_photo` = '" + petData.pet_photo + "', `pet_desc` = '" + petData.pet_desc + "', `updated_at` = CURRENT_TIMESTAMP() WHERE `id` = '" + userData.pet_id + "'";
+
+    db.query(updatePet, function(err, results) {
+        if (err) {
             res.json({
                 status: 500,
                 error: true,
                 error_msg: {
-                    title: 'Failed to fetch data',
+                    title: 'Failed to update data',
                     detail: err
                 },
                 response: ''
             });
             res.end();
         } else {
-            self.createPetFunc(results[0].id);
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: '',
+                response: 'Pet updated!'
+            });
+            res.end();
         }
     });
-
-    self.createPetFunc = function (idUser) {
-        var checkPet = "SELECT `id` FROM `pet` WHERE `user_id` = '" + idUser + "'";
-        var createPet = "INSERT INTO `pet`(`pet_name`,`pet_dob`,`pet_sex`, `furcolor`, `weight`, `breed`, `pet_photo`, `breed_cert`, `pet_desc`, `user_id`, `added_at`) VALUES ('" + petData.name + "', '" + petData.pet_dob + "', '" + petData.pet_sex + "', '" + petData.furcolor + "', '" + petData.weight + "', '" + petData.breed + "', '" + petData.pet_photo + "', '" + petData.breed_cert + "', '" + petData.pet_desc + "', '" + idUser + "', CURRENT_TIMESTAMP())";
-        var updatePet = "UPDATE `pet` SET `pet_name` = '" + petData.name + "',`pet_dob` = '" + petData.pet_dob + "',`pet_sex` = '" + petData.pet_sex + "', `furcolor` = '" + petData.furcolor + "', `weight` = '" + petData.weight + "', `breed` = '" + petData.breed + "', `pet_photo` = '" + petData.pet_photo + "', `pet_desc` = '" + petData.pet_desc + "', `updated_at` = CURRENT_TIMESTAMP() WHERE `user_id` = '" + idUser + "'";
-
-        db.query(checkPet, function(err, result) {
-            if (err) {
-                res.json({
-                    status: 500,
-                    error: true,
-                    error_msg: {
-                        title: 'Failed to fetch data',
-                        detail: err
-                    },
-                    response: ''
-                });
-                res.end();
-            } else if (result[0]){
-                db.query(updatePet, function(err, results) {
-                    if (err) {
-                        res.json({
-                            status: 500,
-                            error: true,
-                            error_msg: {
-                                title: 'Failed to insert data',
-                                detail: err
-                            },
-                            response: ''
-                        });
-                        res.end();
-                    } else {
-                        res.json({
-                            status: 200,
-                            error: false,
-                            error_msg: '',
-                            response: 'Pet updated!'
-                        });
-                        res.end();
-                    }
-                });
-            } else {
-                db.query(createPet, function(err, results) {
-                    if (err) {
-                        res.json({
-                            status: 500,
-                            error: true,
-                            error_msg: {
-                                title: 'Failed to insert data',
-                                detail: err
-                            },
-                            response: ''
-                        });
-                        res.end();
-                    } else {
-                        res.json({
-                            status: 200,
-                            error: false,
-                            error_msg: {
-                                title: '',
-                                detail: ''
-                            },
-                            response: 'Pet created!'
-                        });
-                        res.end();
-                    }
-                });
-            }
-        });
-    };
 };
 
 module.exports.createVaccine = function (req, res) {
