@@ -50,29 +50,63 @@ module.exports.matchedPet = function(req, res){
                     provinces : results[i].provinces
                 },
                 matched_status : {
-                    score: ''
+                    score: 0.5
                 }
             }
         };
 
-        // slice(begin, end) note: end not included
-        self.paginate.end = self.paginate.start + self.paginate.size;
+        self.vaccinesData();
+    };
 
-        self.matchedResult = self.matchedSorted.slice(self.paginate.start, self.paginate.end)
+    self.vaccinesData = function () {
+        var getVaccines = "SELECT have_vaccines.id_pet, vaccines.id, vaccines.name FROM have_vaccines JOIN vaccines ON have_vaccines.id_vaccine = vaccines.id";
 
-        res.json({
-            status: 200,
-            error: false,
-            error_msg: {
-                title: '',
-                detail: ''
-            },
-            response: {
-                matchedPet : self.matchedResult
+        var query = db.query(getVaccines, function(err, results){
+            if(err){
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed fetching data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
             }
+            else if(results){
+                for (var i in self.matchedSorted) {
+                    for (var j in results) {
+                        if (results[j].id_pet === self.matchedSorted[i].id) {
+                            var vaccine = {
+                                id : results[j].id,
+                                name : results[j].name
+                            };
+                            self.matchedSorted[i].vaccines.push(vaccine);
+                        }
+                    }
+                }
 
+                // slice(begin, end) note: end not included
+                self.paginate.end = self.paginate.start + self.paginate.size;
+
+                self.matchedResult = self.matchedSorted.slice(self.paginate.start, self.paginate.end)
+
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: {
+                        matchedPet : self.matchedResult
+                    }
+
+                });
+                res.end();
+            }
         });
-        res.end();
     }
 };
 
@@ -159,22 +193,56 @@ module.exports.getLikedPet = function(req, res){
                     provinces : results[i].provinces
                 },
                 matched_status : {
-                    score: '' //TODO: check whether there will be a score on the like page
+                    score: 0.5 //TODO: check whether there will be a score on the like page
                 }
             }
         };
 
-        res.json({
-            status: 200,
-            error: false,
-            error_msg: {
-                title: '',
-                detail: ''
-            },
-            response: {
-                likedPet : self.likePetList
+        self.vaccinesData ();
+    };
+
+    self.vaccinesData = function () {
+        var getVaccines = "SELECT have_vaccines.id_pet, vaccines.id, vaccines.name FROM have_vaccines JOIN vaccines ON have_vaccines.id_vaccine = vaccines.id";
+
+        var query = db.query(getVaccines, function(err, results){
+            if(err){
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed fetching data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            }
+            else if(results){
+                for (var i in self.likePetList) {
+                    for (var j in results) {
+                        if (results[j].id_pet === self.likePetList[i].id) {
+                            var vaccine = {
+                                id : results[j].id,
+                                name : results[j].name
+                            };
+                            self.likePetList[i].vaccines.push(vaccine);
+                        }
+                    }
+                }
+
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: {
+                        likedPet : self.likePetList
+                    }
+                });
+                res.end();
             }
         });
-        res.end();
     }
 };
