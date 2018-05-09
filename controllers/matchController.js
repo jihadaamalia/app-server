@@ -1,8 +1,7 @@
 module.exports.matchedPet = function(req, res){
     var self = this;
     self.paginate = req.query;
-
-    var petOption  = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.name AS city, provinces.name AS provinces FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN (SELECT liked.to FROM liked WHERE liked.from = '"+res.locals.pet_id+"') liked ON pet.id = liked.to WHERE pet.id <> '"+res.locals.pet_id+"' AND liked.to IS NULL";
+    var petOption = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN (SELECT liked.to FROM liked WHERE liked.from = '"+res.locals.pet_id+"') liked ON pet.id = liked.to WHERE liked.to IS NULL";
 
     var query = db.query(petOption, function(err, results){
         if(err){
@@ -23,35 +22,19 @@ module.exports.matchedPet = function(req, res){
     });
 
     self.sortMatched = function (results) {
-        self.matchedSorted = [];
-        for (var i in results) {
-            self.matchedSorted[i] = {
-                id : results[i].id,
-                pet_name : results[i].pet_name,
-                pet_dob : results[i].pet_dob,
-                pet_sex : results[i].pet_sex,
-                furcolor : results[i].furcolor,
-                weight : results[i].weight,
-                breed_name : results[i].breed_name,
-                size : results[i].size,
-                variant : results[i].variant,
-                pet_photo : results[i].pet_photo,
-                breed_cert : results[i].breed_cert,
-                pet_desc : results[i].pet_desc,
-                vaccines : [],
-                user_data : {
-                    user_id : results[i].user_id,
-                    name : results[i].name,
-                    username : results[i].username,
-                    user_dob : results[i].user_dob,
-                    photo : results[i].photo,
-                    sex : results[i].sex,
-                    city : results[i].city,
-                    provinces : results[i].provinces
-                },
-                matched_status : {
-                    score: 0.5
-                }
+        self.sliced = [];
+
+        for (var i in results) { //get resource pet
+            if (results[i].id != res.locals.pet_id ) {
+                self.resPet = results[i];
+            }
+        };
+
+        for (var i in results) { //delete unused pet (same gender, diff variants)
+            if (results[i].id != res.locals.pet_id &&
+                results[i].variants_id == self.resPet.variants_id &&
+                results[i].pet_sex != self.resPet.pet_sex) {
+                self.sliced.push(results[i])
             }
         };
 
@@ -75,174 +58,167 @@ module.exports.matchedPet = function(req, res){
                 res.end();
             }
             else if(results){
-                for (var i in self.matchedSorted) {
+                for (var i in self.sliced) {
                     for (var j in results) {
-                        if (results[j].id_pet === self.matchedSorted[i].id) {
+                        self.sliced[i].vaccines = [];
+                        if (results[j].id_pet == self.sliced[i].id) {
                             var vaccine = {
                                 id : results[j].id,
                                 name : results[j].name
                             };
-                            self.matchedSorted[i].vaccines.push(vaccine);
+                            self.sliced[i].vaccines.push(vaccine);
                         }
                     }
                 }
 
-                // slice(begin, end) note: end not included
-                self.paginate.end = self.paginate.start + self.paginate.size;
-
-                self.matchedResult = self.matchedSorted.slice(self.paginate.start, self.paginate.end)
-
-                res.json({
-                    status: 200,
-                    error: false,
-                    error_msg: {
-                        title: '',
-                        detail: ''
-                    },
-                    response: {
-                        matchedPet : self.matchedResult
-                    }
-
-                });
-                res.end();
+                self.weightedSumCalc();
             }
         });
-    }
-};
-
-module.exports.insertLiked = function(req, res){
-    var self = this;
-
-    var insertLiked = "INSERT INTO `liked`(`from`, `to`, `like_stat`, `added_at`) VALUES ('"+res.locals.pet_id+"', '"+req.body.liked_pet+"', '"+req.body.liked_status+"', CURRENT_TIMESTAMP())";
-    var query = db.query(insertLiked, function(err, results){
-        if(err){
-            res.json({
-                status: 500,
-                error: true,
-                error_msg: {
-                    title: 'Failed fetching data',
-                    detail: err
-                },
-                response: ''
-            });
-            res.end();
-        }
-        else if(results){
-            res.json({
-                status: 200,
-                error: false,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: 'like status added'
-            });
-            res.end();
-        }
-    });
-};
-
-module.exports.getLikedPet = function(req, res){
-    var self = this;
-
-    var getLiked = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username,  DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.name AS city, provinces.name AS provinces FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant JOIN liked ON pet.id = liked.to WHERE liked.from = '"+res.locals.pet_id+"' AND liked.like_stat = 1";
-
-    var query = db.query(getLiked, function(err, results){
-        if(err){
-            res.json({
-                status: 500,
-                error: true,
-                error_msg: {
-                    title: 'Failed fetching data',
-                    detail: err
-                },
-                response: ''
-            });
-            res.end();
-        }
-        else if(results){
-            self.likePet (results)
-        }
-    });
-
-    self.likePet = function (results) {
-        self.likePetList = [];
-        for (var i in results) {
-            self.likePetList[i] = {
-                id : results[i].id,
-                pet_name : results[i].pet_name,
-                pet_dob : results[i].pet_dob,
-                pet_sex : results[i].pet_sex,
-                furcolor : results[i].furcolor,
-                weight : results[i].weight,
-                breed_name : results[i].breed_name,
-                size : results[i].size,
-                variant : results[i].variant,
-                pet_photo : results[i].pet_photo,
-                breed_cert : results[i].breed_cert,
-                pet_desc : results[i].pet_desc,
-                vaccines : [],
-                user_data : {
-                    user_id : results[i].user_id,
-                    name : results[i].name,
-                    username : results[i].username,
-                    user_dob : results[i].user_dob,
-                    photo : results[i].photo,
-                    sex : results[i].sex,
-                    city : results[i].city,
-                    provinces : results[i].provinces
-                },
-                matched_status : {
-                    score: 0.5 //TODO: check whether there will be a score on the like page
-                }
-            }
-        };
-
-        self.vaccinesData ();
     };
 
-    self.vaccinesData = function () {
-        var getVaccines = "SELECT have_vaccines.id_pet, vaccines.id, vaccines.name FROM have_vaccines JOIN vaccines ON have_vaccines.id_vaccine = vaccines.id";
-
-        var query = db.query(getVaccines, function(err, results){
-            if(err){
-                res.json({
-                    status: 500,
-                    error: true,
-                    error_msg: {
-                        title: 'Failed fetching data',
-                        detail: err
-                    },
-                    response: ''
-                });
-                res.end();
+    self.weightedSumCalc = function () {
+        self.weight = [
+            {
+                title : 'size',
+                weight : 0.33,
+                score : [0,1]
+            },
+            {
+                title : 'health',
+                weight : 0.27,
+                score : [0,1]
+            },
+            {
+                title : 'breed',
+                weight : 0.2,
+                score : [0,1]
+            },
+            {
+                title : 'age',
+                weight : 0.13,
+                score : [0,1]
+            },
+            {
+                title : 'city',
+                weight : 0.07,
+                score : [0,1]
             }
-            else if(results){
-                for (var i in self.likePetList) {
-                    for (var j in results) {
-                        if (results[j].id_pet === self.likePetList[i].id) {
-                            var vaccine = {
-                                id : results[j].id,
-                                name : results[j].name
-                            };
-                            self.likePetList[i].vaccines.push(vaccine);
-                        }
-                    }
+        ];
+
+        function getAge(dateString) {
+            var today = new Date();
+            var birthDate = new Date(dateString);
+
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        (function(){
+            if (typeof Object.defineProperty === 'function'){
+                try{Object.defineProperty(Array.prototype,'sortBy',{value:sb}); }catch(e){}
+            }
+            if (!Array.prototype.sortBy) Array.prototype.sortBy = sb;
+
+            function sb(f){
+                for (var i=this.length;i;){
+                    var o = this[--i];
+                    this[i] = [].concat(f.call(o,o,i),o);
                 }
-
-                res.json({
-                    status: 200,
-                    error: false,
-                    error_msg: {
-                        title: '',
-                        detail: ''
-                    },
-                    response: {
-                        likedPet : self.likePetList
+                this.sort(function(a,b){
+                    for (var i=0,len=a.length;i<len;++i){
+                        if (a[i]!=b[i]) return a[i]<b[i]?-1:1;
                     }
+                    return 0;
                 });
-                res.end();
+                for (var i=this.length;i;){
+                    this[--i]=this[i][this[i].length-1];
+                }
+                return this;
             }
+        })();
+
+        for (var i in self.sliced) {
+            self.sliced[i].matched_status = {
+                    score : 0
+            };
+
+            if (self.resPet.size == self.sliced[i].size) {
+                self.sliced[i].matched_status.score = self.sliced[i].matched_status.score + (self.weight[0].weight * self.weight[0].score[1]);
+            }
+
+            if (self.sliced[i].vaccines.length > 0) {
+                self.sliced[i].matched_status.score = self.sliced[i].matched_status.score + (self.weight[1].weight * self.weight[1].score[1]);
+            }
+
+            if (self.resPet.breed_pref == self.sliced[i].breed) {
+                self.sliced[i].matched_status.score = self.sliced[i].matched_status.score + (self.weight[2].weight * self.weight[2].score[1]);
+            }
+
+            self.sliced[i].age = getAge(self.sliced[i].pet_dob)
+
+            if (self.resPet.age_min <= self.sliced[i].age && self.resPet.age_max <= self.sliced[i].age) {
+                self.sliced[i].matched_status.score = self.sliced[i].matched_status.score + (self.weight[3].weight * self.weight[3].score[1]);
+            }
+
+            if (self.resPet.city_pref == self.sliced[i].city_id) {
+                self.sliced[i].matched_status.score = self.sliced[i].matched_status.score + (self.weight[4].weight * self.weight[4].score[1]);
+            }
+        }
+
+        self.sliced.sortBy( function(){ return -this.matched_status.score } );
+
+        // slice(begin, end) note: end not included
+        self.paginate.end = self.paginate.start + self.paginate.size;
+
+        self.paginated = self.sliced.slice(self.paginate.start, self.paginate.end);
+
+        //rearrange format
+        self.matchedResult = [];
+        for (var i in self.paginated) {
+            self.matchedResult[i] = {
+                id : self.paginated[i].id,
+                pet_name : self.paginated[i].pet_name,
+                pet_dob : self.paginated[i].pet_dob,
+                pet_sex : self.paginated[i].pet_sex,
+                furcolor : self.paginated[i].furcolor,
+                weight : self.paginated[i].weight,
+                breed_name : self.paginated[i].breed_name,
+                size : self.paginated[i].size,
+                variant : self.paginated[i].variant,
+                pet_photo : self.paginated[i].pet_photo,
+                breed_cert : self.paginated[i].breed_cert,
+                pet_desc : self.paginated[i].pet_desc,
+                vaccines : self.paginated[i].vaccines,
+                user_data : {
+                    user_id : self.paginated[i].user_id,
+                    name : self.paginated[i].name,
+                    username : self.paginated[i].username,
+                    user_dob : self.paginated[i].user_dob,
+                    photo : self.paginated[i].photo,
+                    sex : self.paginated[i].sex,
+                    city : self.paginated[i].city,
+                    provinces : self.paginated[i].provinces
+                },
+                matched_status : {
+                    score: self.paginated[i].matched_status.score
+                }
+            };
+        }
+
+        res.json({
+            status: 200,
+            error: false,
+            error_msg: {
+                title: '',
+                detail: ''
+            },
+            response: self.matchedResult
         });
+        res.end();
     }
 };
+
