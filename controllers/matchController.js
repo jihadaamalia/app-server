@@ -169,11 +169,11 @@ module.exports.matchedPet = function(req, res){
             }
         }
 
+        //sort by score
         self.sliced.sortBy( function(){ return -this.matched_status.score } );
 
         // slice(begin, end) note: end not included
         self.paginate.end = self.paginate.start + self.paginate.size;
-
         self.paginated = self.sliced.slice(self.paginate.start, self.paginate.end);
 
         //rearrange format
