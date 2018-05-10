@@ -8,6 +8,7 @@ module.exports = function(app) {
     var setting = require('../controllers/settingController');
     var profile = require('../controllers/profileController');
     var pet = require('../controllers/petController');
+    var liked = require('../controllers/likedController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -40,10 +41,10 @@ module.exports = function(app) {
 
     //matched pet timeline
     app.get('/matched/pet', match.matchedPet);
-    app.post('/matched/liked', match.insertLiked);
+    app.post('/matched/liked', liked.insertLiked);
 
     //get liked pet data
-    app.get('/matched/liked', match.getLikedPet);
+    app.get('/matched/liked', liked.getLikedPet);
 
     //my profile
     app.get('/profile/user-profile', profile.getUserProf);
