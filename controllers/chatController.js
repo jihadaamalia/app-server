@@ -55,3 +55,32 @@ module.exports.chatRoom = function (req, res) {
         }
     });
 };
+
+module.exports.sendChat = function (req, res) {
+    var chatRoomSql = "INSERT INTO `message_with` VALUES ('2', '', 'hi!', '1', CURRENT_TIMESTAMP())";
+    db.query(chatRoomSql, function(err, result){
+        if(err) {
+            res.json({
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
+            });
+            res.end();
+        } else {
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: result
+            });
+            res.end();
+        }
+    });
+};
