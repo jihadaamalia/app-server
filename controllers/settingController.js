@@ -176,7 +176,10 @@ module.exports.updatePet = function(req,res) {
             res.json({
                 status: 200,
                 error: false,
-                error_msg: '',
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
                 response: 'Pet updated!'
             });
             res.end();
