@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = function(app) {
+    var chat = require('../controllers/chatController');
     var location = require('../controllers/locationController');
     var vaccine = require('../controllers/vaccineController');
     var match = require('../controllers/matchController');
@@ -58,6 +59,9 @@ module.exports = function(app) {
     //setting account
     app.post('/setting/user', setting.updateUser);
     app.post('/setting/change-password', setting.changePass);
+
+    //chat
+    app.get('/chat/room', chat.roomList);
 
 };
   
