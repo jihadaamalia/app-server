@@ -216,7 +216,9 @@ module.exports.matchedPet = function(req, res){
                 title: '',
                 detail: ''
             },
-            response: self.matchedResult
+            response: {
+                matchedPet: self.matchedResult
+            }
         });
         res.end();
     }
