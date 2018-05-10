@@ -62,6 +62,7 @@ module.exports = function(app) {
 
     //chat
     app.get('/chat/room', chat.roomList);
+    app.get('/chat/room/:roomid', chat.chatRoom); //get city by province
 
 };
   
