@@ -20,7 +20,7 @@ module.exports.getUserProf = function (req, res) {
                     title: '',
                     detail: ''
                 },
-                response: result
+                response: result[0]
             });
             res.end();
         }
@@ -69,4 +69,36 @@ module.exports.getPet = function(req, res){
             res.end();
         });
     }
+};
+
+module.exports.getPetPreference = function(req, res){
+    self = this;
+    var petPref  = "SELECT breeds.name AS breeds, pet.age_min, pet.age_max, regencies.name AS city FROM `pet` JOIN breeds ON breeds.id = pet.breed_pref JOIN regencies ON regencies.id = pet.city_pref WHERE pet.user_id = '"+res.locals.user_id+"'";
+
+    var query = db.query(petPref, function(err, results){
+        if(err){
+            res.json({
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed to fetch data',
+                    detail: err
+                },
+                response: ''
+            });
+            res.end();
+        }
+        else if(results[0]){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: results[0]
+            });
+            res.end();
+        }
+    });
 };

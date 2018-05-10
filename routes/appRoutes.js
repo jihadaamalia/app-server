@@ -50,6 +50,7 @@ module.exports = function(app) {
     //my profile
     app.get('/profile/user-profile', profile.getUserProf);
     app.get('/profile/pet', profile.getPet); //pet general info + vaccines
+    app.get('/profile/preference', profile.getPetPreference);
 
     //setting
     app.post('/setting/user-profile', setting.updateUserProf );
