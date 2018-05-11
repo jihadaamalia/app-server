@@ -10,6 +10,7 @@ module.exports = function(app) {
     var profile = require('../controllers/profileController');
     var pet = require('../controllers/petController');
     var liked = require('../controllers/likedController');
+    var history = require('../controllers/historyController');
 
     app.get('/', function(req,res){
         res.json({"Message" : "Hello World!"});
@@ -66,5 +67,8 @@ module.exports = function(app) {
     app.get('/chat/room', chat.roomList);
     app.get('/chat/room/:roomid', chat.chatRoom); //get city by province
 
+    //history
+    app.post('/matched/history', history.insertHistory);
+    app.get('/matched/history', history.getHistory);
 };
   
