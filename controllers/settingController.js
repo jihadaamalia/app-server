@@ -157,6 +157,7 @@ module.exports.updateUserProf = function (req, res) {
 };
 
 module.exports.updatePet = function(req,res) {
+    var self = this;
     var petData = req.body;
     var updatePet = "UPDATE `pet` SET `pet_name` = '" + petData.name + "',`pet_dob` = '" + petData.pet_dob + "',`pet_sex` = '" + petData.pet_sex + "', `furcolor` = '" + petData.furcolor + "', `weight` = '" + petData.weight + "', `breed` = '" + petData.breed + "', `pet_photo` = '" + petData.pet_photo + "', `pet_desc` = '" + petData.pet_desc + "', `breed_cert` = '" + petData.breed_cert + "', `updated_at` = CURRENT_TIMESTAMP() WHERE `user_id` = '" + res.locals.user_id + "'";
 
@@ -173,18 +174,39 @@ module.exports.updatePet = function(req,res) {
             });
             res.end();
         } else {
-            res.json({
-                status: 200,
-                error: false,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: 'Pet updated!'
-            });
-            res.end();
+            self.clearDislike();
         }
     });
+
+    self. clearDislike = function () {
+        var updatePet = "DELETE FROM `liked` WHERE `to`= '" + res.locals.user_id + "' AND `like_stat` = 2";
+
+        db.query(updatePet, function(err, results) {
+            if (err || results.affectedRows === 0) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to update data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: 'Pet updated!'
+                });
+                res.end();
+            }
+        });
+    };
 
 };
 
