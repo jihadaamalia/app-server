@@ -74,7 +74,7 @@ module.exports.roomList = function (req, res) {
     });
 
     self.getLastMsg = function () {
-        var lastMsgSql = "SELECT chat_msg.from, chat_msg.image, chat_msg.text, chat_msg.added_at, chat_msg.room_id FROM chat_msg WHERE chat_msg.room_id IN (SELECT chat_room.id FROM chat_room JOIN chat_member ON chat_room.id = chat_member.room_id WHERE chat_member.member_id = '"+res.locals.pet_id+"')"
+        var lastMsgSql = "SELECT chat_msg.from, chat_msg.image, chat_msg.text, DATE_FORMAT(chat_msg.added_at,'%Y-%m-%d %H:%i') AS added_at, chat_msg.room_id FROM chat_msg WHERE chat_msg.room_id IN (SELECT chat_room.id FROM chat_room JOIN chat_member ON chat_room.id = chat_member.room_id WHERE chat_member.member_id = '"+res.locals.pet_id+"')"
 
         db.query(lastMsgSql, function(err, result){
             if(err) {
@@ -99,11 +99,11 @@ module.exports.roomList = function (req, res) {
 
                     for (var j in result) {
                         if (result[j].room_id == self.roomList[i].room_id) {
-                            if (new Date(result[j].added_at) > self.roomList[i].last_msg.timestamp) { //get last msg
+                            if (result[j].added_at > self.roomList[i].last_msg.timestamp) { //get last msg
                                 self.roomList[i].last_msg.from = result[j].from;
                                 self.roomList[i].last_msg.image = result[j].image;
                                 self.roomList[i].last_msg.text = result[j].text;
-                                self.roomList[i].last_msg.timestamp = new Date(result[j].added_at); //TODO: CONVERT TO bangkok timezone
+                                self.roomList[i].last_msg.timestamp = result[j].added_at; //TODO: CONVERT TO bangkok timezone
                             }
                         }
                     }
@@ -127,7 +127,7 @@ module.exports.roomList = function (req, res) {
 };
 
 module.exports.chatRoom = function (req, res) {
-    var chatRoomSql = "SELECT chat_msg.from, user_profile.name, user_profile.photo, chat_msg.image, chat_msg.text, chat_msg.added_at FROM chat_msg JOIN pet ON chat_msg.from = pet.id JOIN user_profile ON pet.user_id = user_profile.id WHERE chat_msg.room_id = "+req.params.room_id+" ORDER BY chat_msg.added_at ASC";
+    var chatRoomSql = "SELECT chat_msg.from, user_profile.name, user_profile.photo, chat_msg.image, chat_msg.text, DATE_FORMAT(chat_msg.added_at,'%Y-%m-%d %H:%i') AS added_at FROM chat_msg JOIN pet ON chat_msg.from = pet.id JOIN user_profile ON pet.user_id = user_profile.id WHERE chat_msg.room_id = "+req.params.room_id+" ORDER BY chat_msg.added_at ASC";
     db.query(chatRoomSql, function(err, result){
         if(err) {
             res.json({
