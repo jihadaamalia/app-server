@@ -64,8 +64,10 @@ module.exports = function(app) {
     app.post('/setting/change-password', setting.changePass);
 
     //chat
+    app.post('/chat/start', chat.createRoom);
     app.get('/chat/room', chat.roomList);
-    app.get('/chat/room/:roomid', chat.chatRoom); //get city by province
+    app.get('/chat/room/:room_id', chat.chatRoom);
+    app.post('/chat/messages', chat.sendChat);
 
     //history
     app.post('/matched/history', history.insertHistory);
