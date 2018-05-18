@@ -1,7 +1,5 @@
 module.exports.calculate = function (alternative, resource) {
-
     var self = this;
-    self.optimalAge = 1;
     self.criteria = [
         {
             title : 'age',
@@ -29,6 +27,13 @@ module.exports.calculate = function (alternative, resource) {
             score : [0,1]
         }
     ];
+
+    //supporting data
+    self.optimalAge = 1;
+    if (resource.cross_possibility) {
+        var res = resource.cross_possibility;
+        self.possibleBreed = res.split(";");
+    }
 
     function getAge(dateString) {
         var today = new Date();
@@ -66,12 +71,10 @@ module.exports.calculate = function (alternative, resource) {
         }
     })();
 
-    //define pet sex
+    //sex related criteria
     if (resource.pet_sex == 'f') {
-        //console.log(alternative[0])
         self.pet_f = resource;
         self.pet_m = alternative;
-        console.log(alternative.length)
 
         for (var i in self.pet_m) {
             alternative[i].scores = {
@@ -106,8 +109,6 @@ module.exports.calculate = function (alternative, resource) {
             } else {
                 alternative[i].scores.size = self.criteria[1].score[0];
             }
-
-            //console.log(alternative[i].scores.size, ' ',alternative[i].scores.age,' ', i)
         }
     } else {
         self.pet_m = resource;
@@ -149,10 +150,43 @@ module.exports.calculate = function (alternative, resource) {
         }
     }
 
+    //general criteria
     for (var i in alternative) {
+        //health
+        if (alternative[i].vaccines.length > 0 && alternative[i].regular_vaccine == 1 ) {
+            alternative[i].scores.health = self.criteria[2].score[2];
+        } else if (alternative[i].vaccines.length > 0 && !alternative[i].regular_vaccine ) {
+            alternative[i].scores.health = self.criteria[2].score[1];
+        } else if (alternative[i].vaccines.length == 0) {
+            alternative[i].scores.health = self.criteria[2].score[0];
+        }
+
+        //breeds
+        if (alternative[i].breed == resource.breed) { //same breed or same crossbreed
+            alternative[i].scores.breed = self.criteria[3].score[3];
+        } else if (!resource.mixed && !alternative[i].mixed) { //both pure but diff breed
+            if (self.possibleBreed) { //have recognized crossbreed
+                for (var j in self.possibleBreed) {
+                    if (self.possibleBreed[j] == alternative[i].breed_name) { //both pure and new breed is common
+                        alternative[i].scores.breed = self.criteria[3].score[2];
+                    } else { //both pure but new breed have not recognized
+                        alternative[i].scores.breed = self.criteria[3].score[1];
+                    }
+                }
+            } else { //both pure but new breed have not recognized
+                alternative[i].scores.breed = self.criteria[3].score[1];
+            }
+        } else if (resource.mixed || alternative[i].mixed) { //cross x pure or cross x cross
+            alternative[i].scores.breed = self.criteria[3].score[0];
+        }
+
+        //city
+
+
+
         alternative[i].matched_status = {
             score : 0
-        }
+        };
 
         alternative[i].matched_status.score = (self.criteria[0].weight * alternative[i].scores.age) + (self.criteria[1].weight * alternative[i].scores.size) + (self.criteria[2].weight * alternative[i].scores.health) + (self.criteria[3].weight * alternative[i].scores.breed) + (self.criteria[4].weight * alternative[i].scores.city);
     }
