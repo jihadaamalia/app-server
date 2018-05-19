@@ -71,6 +71,6 @@ module.exports = function(app) {
 
     //history
     app.post('/matched/history', history.insertHistory);
-    app.get('/matched/history', history.getHistory);
+    app.get('/matched/history/:pet_id', history.getHistory);
 };
   

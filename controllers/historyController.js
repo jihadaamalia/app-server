@@ -1,8 +1,10 @@
+var wsm = require('./wsmController');
+
 module.exports.insertHistory = function(req, res){
     var self = this;
-    var checkPetSex = "SELECT `pet_sex` FROM `pet` WHERE `id` = '"+res.locals.pet_id+"'"; //check pet sex
+    var petDetail = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref, have_vaccines.id_vaccine FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN have_vaccines ON have_vaccines.id_pet = pet.id WHERE pet.id IN ('"+res.locals.pet_id+"','"+req.body.pet_id+"')"; //check pet sex
 
-    var query = db.query(checkPetSex, function(err, results){
+    var query = db.query(petDetail, function(err, results){
         if(err){
             res.json({
                 status: 500,
@@ -16,20 +18,41 @@ module.exports.insertHistory = function(req, res){
             res.end();
         }
         else if(results){
-            if (results[0].pet_sex == 'm') {
-                self.pet_m = res.locals.pet_id;
-                self.pet_f = req.body.pet_id;
-            } else if (results[0].pet_sex == 'f'){
-                self.pet_f = res.locals.pet_id;
-                self.pet_m = req.body.pet_id;
+            for (var i in results) {
+                if(results[i].id == res.locals.pet_id) {
+                    if (!self.from) {
+                        self.from = results[i]
+                        self.from.vaccines = [];
+                    }
+                    if (results[i].id_vaccine) {
+                        var vaccData = {
+                            id: results[i].id_vaccine
+                        };
+                        self.from.vaccines.push(vaccData);
+                    }
+                }
+                else if (results[i].id == req.body.pet_id) {
+                    if (!self.to) {
+                        self.to = []
+                        self.to.push(results[i])
+                        self.to[0].vaccines = [];
+                    }
+                    if (results[i].id_vaccine) {
+                        var vaccData = {
+                            id: results[i].id_vaccine
+                        };
+                        self.to[0].vaccines.push(vaccData);
+                    }
+                }
             }
-
             self.createHistory();
         }
     });
 
     self.createHistory = function () {
-        var historySql = "INSERT INTO `history_with`(`pet_m`, `pet_f`, `match_stat`, `match_date`, `added_at`) VALUES ('"+self.pet_m+"', '"+self.pet_f+"', '"+req.body.status+"', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
+        self.to = wsm.calculate(self.to,self.from)[0];
+
+        var historySql = "INSERT INTO `history_with`(`pet_from`, `pet_to`, `match_stat`, `match_date`, `score`, `added_at`) VALUES ('"+self.from.id+"', '"+self.to.id+"', '"+req.body.status+"', CURRENT_TIMESTAMP(),'"+self.to.matched_status.score+"', CURRENT_TIMESTAMP())";
 
         var query = db.query(historySql, function(err, results){
             if(err){
@@ -63,7 +86,7 @@ module.exports.insertHistory = function(req, res){
 
 module.exports.getHistory = function(req, res){
     var self = this;
-    var ownPet = "select pet.id, pet.pet_name, pet.pet_dob, pet.pet_photo, pet.pet_sex, breeds.name AS breed from pet JOIN breeds ON pet.breed = breeds.id where pet.id = '"+res.locals.pet_id+"'"
+    var ownPet = "SELECT history_with.pet_from, pet_f.pet_name AS from_name, pet_f.pet_photo AS from_photo, breeds_f.name AS from_breed, history_with.pet_to, pet_t.pet_name AS to_name, pet_t.pet_photo AS to_photo, breeds_t.name AS to_breed, history_with.match_stat, history_with.match_date, history_with.score FROM history_with JOIN pet pet_f ON history_with.pet_from = pet_f.id JOIN pet pet_t ON history_with.pet_to = pet_t.id JOIN breeds breeds_f ON breeds_f.id = pet_f.breed JOIN breeds breeds_t ON breeds_t.id = pet_t.breed WHERE history_with.pet_from = '"+req.params.pet_id+"'"
 
     var query = db.query(ownPet, function(err, results){
         if(err){
@@ -79,80 +102,15 @@ module.exports.getHistory = function(req, res){
             res.end();
         }
         else if(results){
-            self.getPartner (results[0]);
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: results
+            });
         }
     });
-
-    self.getPartner = function (ownPet) {
-        self.ownPet = {
-            id: ownPet.id,
-            name: ownPet.pet_name,
-            dob: ownPet.pet_dob,
-            photo: ownPet.pet_photo,
-            breed: ownPet.breed
-        };
-
-        if (ownPet.pet_sex == 'f') {
-            self.subqueryHistory = "(SELECT pet_m FROM history_with WHERE pet_f = '"+res.locals.pet_id+"')";
-            self.onClause = "pet_m";
-            self.pet_f = ownPet;
-        } else if (ownPet.pet_sex == 'm') {
-            self.subqueryHistory = "(SELECT pet_f FROM history_with WHERE pet_m = '"+res.locals.pet_id+"')"
-            self.onClause = "pet_f";
-        }
-
-        var queryHistory = "SELECT pet.id, pet.pet_name, pet.pet_dob, pet.pet_photo, breeds.name AS breed, history_with.match_stat, history_with.match_date FROM pet JOIN breeds ON pet.breed = breeds.id JOIN history_with ON history_with."+self.onClause+" = pet.id WHERE pet.id in "+self.subqueryHistory+""
-        var query = db.query(queryHistory, function(err, results){
-            if(err){
-                res.json({
-                    status: 500,
-                    error: true,
-                    error_msg: {
-                        title: 'Failed to fetch data',
-                        detail: err
-                    },
-                    response: ''
-                });
-                res.end();
-            }
-            else if(results){
-
-                self.historyList = [];
-                for (var i in results) {
-                    var otherPet = {
-                        id: results[i].id,
-                        name: results[i].pet_name,
-                        dob: results[i].pet_dob,
-                        photo: results[i].pet_photo,
-                        breed: results[i].breed
-                    };
-
-                    if (ownPet.pet_sex == 'f') {
-                        self.history = {
-                            pet_m: otherPet,
-                            pet_f: self.ownPet
-                        }
-                    } else if (ownPet.pet_sex == 'm') {
-                        self.history = {
-                            pet_m: self.ownPet,
-                            pet_f: otherPet
-                        }
-                    }
-
-                    self.historyList.push(self.history)
-                }
-
-                res.json({
-                    status: 200,
-                    error: false,
-                    error_msg: {
-                        title: '',
-                        detail: ''
-                    },
-                    response: self.historyList
-                });
-            }
-        });
-
-     }
 };
