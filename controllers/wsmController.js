@@ -190,9 +190,64 @@ module.exports.calculate = function (alternative, resource) {
         for (var i in alternative) {
             //health
             if (alternative[i].vaccines.length > 0) {
-                alternative[i].scores.health = self.criteria[2].score[2];
-            } else if (alternative[i].vaccines.length > 0 ) {
-                alternative[i].scores.health = self.criteria[2].score[1];
+                if (alternative[i].variant_id == 1) {
+                    var vaccines = alternative[i].vaccines;
+
+                    function getCoreDP(vaccines) {
+                        return vaccines.id == 1;
+                    }
+
+                    function getCoreDHLPI(vaccines) {
+                        return vaccines.id == 2;
+                    }
+
+                    function getCoreDHLPII(vaccines) {
+                        return vaccines.id == 3;
+                    }
+
+                    function getCoreRabies(vaccines) {
+                        return vaccines.id == 4;
+                    }
+
+
+                    if (vaccines.find(getCoreDP) &&
+                        vaccines.find(getCoreRabies) ||
+                        vaccines.find(getCoreDHLPI) ||
+                        vaccines.find(getCoreDHLPII)) {
+                        alternative[i].scores.health = self.criteria[2].score[2];
+                    } else {
+                        alternative[i].scores.health = self.criteria[2].score[1];
+                    }
+                }
+                else {
+                    var vaccines = alternative[i].vaccines;
+
+                    function getCoreFPV(vaccines) {
+                        return vaccines.id == 9;
+                    }
+
+                    function getCoreFVR(vaccines) {
+                        return vaccines.id == 10;
+                    }
+
+                    function getCoreFCV(vaccines) {
+                        return vaccines.id == 11;
+                    }
+
+                    function getCoreRabies(vaccines) {
+                        return vaccines.id == 13;
+                    }
+
+
+                    if (vaccines.find(getCoreFPV) &&
+                        vaccines.find(getCoreFVR) &&
+                        vaccines.find(getCoreFCV) &&
+                        vaccines.find(getCoreRabies)){
+                        alternative[i].scores.health = self.criteria[2].score[2];
+                    } else {
+                        alternative[i].scores.health = self.criteria[2].score[1];
+                    }
+                }
             } else if (alternative[i].vaccines.length == 0) {
                 alternative[i].scores.health = self.criteria[2].score[0];
             }
@@ -334,11 +389,66 @@ module.exports.calculate = function (alternative, resource) {
         for (var i in alternative) {
             //health
             if (alternative[i].vaccines.length > 0) {
-                alternative[i].scores.health = self.criteriaPref[2].score[2];
-            } else if (alternative[i].vaccines.length > 0) {
-                alternative[i].scores.health = self.criteriaPref[2].score[1];
+                if (alternative[i].variant_id == 1) {
+                    var vaccines = alternative[i].vaccines;
+
+                    function getCoreDP(vaccines) {
+                        return vaccines.id == 1;
+                    }
+
+                    function getCoreDHLPI(vaccines) {
+                        return vaccines.id == 2;
+                    }
+
+                    function getCoreDHLPII(vaccines) {
+                        return vaccines.id == 3;
+                    }
+
+                    function getCoreRabies(vaccines) {
+                        return vaccines.id == 4;
+                    }
+
+
+                    if (vaccines.find(getCoreDP) &&
+                        vaccines.find(getCoreRabies) ||
+                        vaccines.find(getCoreDHLPI) ||
+                        vaccines.find(getCoreDHLPII)) {
+                        alternative[i].scores.health = self.criteria[2].score[2];
+                    } else {
+                        alternative[i].scores.health = self.criteria[2].score[1];
+                    }
+                }
+                else {
+                    var vaccines = alternative[i].vaccines;
+
+                    function getCoreFPV(vaccines) {
+                        return vaccines.id == 9;
+                    }
+
+                    function getCoreFVR(vaccines) {
+                        return vaccines.id == 10;
+                    }
+
+                    function getCoreFCV(vaccines) {
+                        return vaccines.id == 11;
+                    }
+
+                    function getCoreRabies(vaccines) {
+                        return vaccines.id == 13;
+                    }
+
+
+                    if (vaccines.find(getCoreFPV) &&
+                        vaccines.find(getCoreFVR) &&
+                        vaccines.find(getCoreFCV) &&
+                        vaccines.find(getCoreRabies)){
+                        alternative[i].scores.health = self.criteria[2].score[2];
+                    } else {
+                        alternative[i].scores.health = self.criteria[2].score[1];
+                    }
+                }
             } else if (alternative[i].vaccines.length == 0) {
-                alternative[i].scores.health = self.criteriaPref[2].score[0];
+                alternative[i].scores.health = self.criteria[2].score[0];
             }
 
             //breeds
