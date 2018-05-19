@@ -1,6 +1,6 @@
 module.exports.calculate = function (alternative, resource) {
     var self = this;
-    self.criteria = [
+    self.criteria = [ //:todo FIX CRITERIA
         {
             title : 'age',
             weight : 0.33,
@@ -29,7 +29,8 @@ module.exports.calculate = function (alternative, resource) {
     ];
 
     //supporting data
-    self.optimalAge = 1;
+    self.optAgeF = 1;
+    self.optAgeM = 1;
     if (resource.cross_possibility) {
         var res = resource.cross_possibility;
         self.possibleBreed = res.split(";");
@@ -181,11 +182,14 @@ module.exports.calculate = function (alternative, resource) {
         }
 
         //city
-
-
+        if (alternative[i].city == resource.city) { //same city
+            alternative[i].scores.city = self.criteria[4].score[1];
+        } else { //cross x pure or cross x cross
+            alternative[i].scores.city = self.criteria[4].score[0];
+        }
 
         alternative[i].matched_status = {
-            score : 0
+            score: 0
         };
 
         alternative[i].matched_status.score = (self.criteria[0].weight * alternative[i].scores.age) + (self.criteria[1].weight * alternative[i].scores.size) + (self.criteria[2].weight * alternative[i].scores.health) + (self.criteria[3].weight * alternative[i].scores.breed) + (self.criteria[4].weight * alternative[i].scores.city);
