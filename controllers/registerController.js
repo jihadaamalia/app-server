@@ -116,6 +116,27 @@ module.exports.createVaccine = function (req, res) {
                 });
                 res.end();
             } else {
+                self.updateFirstLogin();
+            }
+        });
+    };
+
+    self.updateFirstLogin = function () {
+        var firstLogin = "UPDATE `user` SET `first_login` = 0 WHERE `id` = '" + userData.username_id + "'";
+
+        db.query(firstLogin, function(err, results) {
+            if (err) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to update data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else {
                 res.json({
                     status: 200,
                     error: false,
