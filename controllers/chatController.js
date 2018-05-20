@@ -1,6 +1,6 @@
 module.exports.createRoom = function (req, res) {
     var self = this;
-    var createRoomSql = "INSERT INTO chat_room VALUES ('', '', CURRENT_TIMESTAMP)";
+    var createRoomSql = "INSERT INTO chat_room VALUES ('', CURRENT_TIMESTAMP)";
 
     db.query(createRoomSql, function(err, result){
         if(err) {
