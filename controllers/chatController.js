@@ -172,16 +172,12 @@ module.exports.sendChat = function (req, res) {
             });
             res.end();
         } else if (result.affectedRows > 0) {
-            res.json({
-                status: 200,
-                error: false,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: result
-            });
-            res.end();
+            var reqRoom = {
+                params: {
+                    room_id:req.body.room
+                }
+            };
+            module.exports.chatRoom(reqRoom,res);
         }
     });
 };
