@@ -34,7 +34,7 @@ module.exports.matchedPet = function(req, res){
 
         for (var i in results) { //delete unused pet (same gender, diff variants)
             if (results[i].id != res.locals.pet_id &&
-                results[i].variants_id == self.resPet.variants_id &&
+                results[i].variant_id == self.resPet.variant_id &&
                 results[i].pet_sex != self.resPet.pet_sex) {
                 self.sliced.push(results[i])
             }
