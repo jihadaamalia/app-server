@@ -57,7 +57,7 @@ module.exports.updateUser = function(req , res){
                             title: '',
                             detail: ''
                         },
-                        response: 'Username updated!'
+                        response: 'User data updated!'
                     });
                     res.end();
                 };
