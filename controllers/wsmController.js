@@ -107,7 +107,6 @@ module.exports.calculate = function (alternative, resource) {
         if (resource.pet_sex == 'f') {
             self.pet_f = resource;
             self.pet_m = alternative;
-            console.log(alternative.length)
 
             for (var i in self.pet_m) {
                 alternative[i].scores = {
