@@ -73,7 +73,7 @@ module.exports.getPet = function(req, res){
 
 module.exports.getPetPreference = function(req, res){
     self = this;
-    var petPref  = "SELECT breeds.name AS breeds, pet.age_min, pet.age_max, regencies.name AS city FROM `pet` JOIN breeds ON breeds.id = pet.breed_pref JOIN regencies ON regencies.id = pet.city_pref WHERE pet.user_id = '"+res.locals.user_id+"'";
+    var petPref  = "SELECT breeds.name AS breeds, pet.age_min, pet.age_max, regencies.name AS city FROM `pet` LEFT JOIN breeds ON breeds.id = pet.breed_pref LEFT JOIN regencies ON regencies.id = pet.city_pref WHERE pet.user_id = '"+res.locals.user_id+"'";
 
     var query = db.query(petPref, function(err, results){
         if(err){
@@ -96,9 +96,7 @@ module.exports.getPetPreference = function(req, res){
                     title: '',
                     detail: ''
                 },
-                response: {
-                    result: results[0]
-                }
+                response: results[0]
             });
             res.end();
         }
