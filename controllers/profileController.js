@@ -88,7 +88,7 @@ module.exports.getPetPreference = function(req, res){
             });
             res.end();
         }
-        else if(results[0]){
+        else {
             res.json({
                 status: 200,
                 error: false,
