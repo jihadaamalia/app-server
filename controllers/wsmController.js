@@ -1,4 +1,5 @@
 module.exports.calculate = function (alternative, resource) {
+
     var self = this;
     self.criteria = [
         {
@@ -100,11 +101,13 @@ module.exports.calculate = function (alternative, resource) {
         }
     })();
 
-    self.generalCalc = function () {
+
+    self.generalCalc = function (alternative, resource) {
         //sex related criteria
         if (resource.pet_sex == 'f') {
             self.pet_f = resource;
             self.pet_m = alternative;
+            console.log(alternative.length)
 
             for (var i in self.pet_m) {
                 alternative[i].scores = {
@@ -148,7 +151,7 @@ module.exports.calculate = function (alternative, resource) {
             self.pet_m = resource;
             self.pet_f = alternative;
 
-            for (var i in self.pet_m) {
+            for (var i in self.pet_f) {
                 alternative[i].scores = {
                     age: 0,
                     size: 0,
@@ -293,12 +296,14 @@ module.exports.calculate = function (alternative, resource) {
         return wsmRes;
     };
 
-    self.preferenceBased= function () {
+    self.preferenceBased = function (alternative, resource) {
+
         if (resource.pet_sex == 'f') {
             self.pet_f = resource;
             self.pet_m = alternative;
 
             for (var i in self.pet_m) {
+
                 alternative[i].scores = {
                     age: 0,
                     size: 0,
@@ -342,7 +347,7 @@ module.exports.calculate = function (alternative, resource) {
             self.pet_m = resource;
             self.pet_f = alternative;
 
-            for (var i in self.pet_m) {
+            for (var i in self.pet_f) {
                 alternative[i].scores = {
                     age: 0,
                     size: 0,
@@ -493,8 +498,8 @@ module.exports.calculate = function (alternative, resource) {
     };
 
     if (resource.breed_pref || resource.age_min || resource.age_max) {
-        return self.preferenceBased ();
+        return self.preferenceBased (alternative, resource);
     } else {
-        return self.generalCalc ();
+        return self.generalCalc (alternative, resource);
     }
 };
