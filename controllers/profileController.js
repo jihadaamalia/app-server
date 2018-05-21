@@ -96,7 +96,9 @@ module.exports.getPetPreference = function(req, res){
                     title: '',
                     detail: ''
                 },
-                response: results[0]
+                response: {
+                    result: results[0]
+                }
             });
             res.end();
         }
