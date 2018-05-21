@@ -182,7 +182,7 @@ module.exports.updatePet = function(req,res) {
         var updatePet = "DELETE FROM `liked` WHERE `to`= '" + res.locals.user_id + "' AND `like_stat` = 2";
 
         db.query(updatePet, function(err, results) {
-            if (err || results.affectedRows === 0) {
+            if (err) {
                 res.json({
                     status: 500,
                     error: true,
