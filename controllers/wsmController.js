@@ -1,5 +1,6 @@
-module.exports.calculate = function (alternative, resource) {
+var tools = require('../libs/tools');
 
+module.exports.calculate = function (alternative, resource) {
     var self = this;
     self.criteria = [
         {
@@ -64,20 +65,10 @@ module.exports.calculate = function (alternative, resource) {
         self.possibleBreed = res.split(";");
     }
 
-    //get age
-    function getAge(dateString) {
-        var today = new Date();
-        var birthDate = new Date(dateString);
-
-        var age = today.getFullYear() - birthDate.getFullYear();
-        var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    }
     //sort
     (function(){
+        // This code is copyright 2012 by Gavin Kistner, !@phrogz.net
+        // License: http://phrogz.net/JS/_ReuseLicense.txt
         if (typeof Object.defineProperty === 'function'){
             try{Object.defineProperty(Array.prototype,'sortBy',{value:sb}); }catch(e){}
         }
@@ -117,8 +108,8 @@ module.exports.calculate = function (alternative, resource) {
                     city: 0
                 };
 
-                self.pet_m[i].age = getAge(self.pet_m[i].pet_dob);
-                self.pet_f.age = getAge(self.pet_f.pet_dob)
+                self.pet_m[i].age = tools.getAge(self.pet_m[i].pet_dob);
+                self.pet_f.age = tools.getAge(self.pet_f.pet_dob)
 
                 //age
 
@@ -159,8 +150,8 @@ module.exports.calculate = function (alternative, resource) {
                     city: 0
                 };
 
-                self.pet_m.age = getAge(self.pet_m.pet_dob);
-                self.pet_f[i].age = getAge(self.pet_f[i].pet_dob)
+                self.pet_m.age = tools.getAge(self.pet_m.pet_dob);
+                self.pet_f[i].age = tools.getAge(self.pet_f[i].pet_dob)
 
                 //age
                 if (self.pet_f[i].age >= self.optAgeF && self.pet_m.age >= self.optAgeM) {

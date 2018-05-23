@@ -1,9 +1,36 @@
-var wsm = require('./wsmController');
+var tools = require('../libs/tools');
 
 module.exports.matchedPet = function(req, res){
     var self = this;
+    //sort
+    (function(){
+        // This code is copyright 2012 by Gavin Kistner, !@phrogz.net
+        // License: http://phrogz.net/JS/_ReuseLicense.txt
+        if (typeof Object.defineProperty === 'function'){
+            try{Object.defineProperty(Array.prototype,'sortBy',{value:sb}); }catch(e){}
+        }
+        if (!Array.prototype.sortBy) Array.prototype.sortBy = sb;
+
+        function sb(f){
+            for (var i=this.length;i;){
+                var o = this[--i];
+                this[i] = [].concat(f.call(o,o,i),o);
+            }
+            this.sort(function(a,b){
+                for (var i=0,len=a.length;i<len;++i){
+                    if (a[i]!=b[i]) return a[i]<b[i]?-1:1;
+                }
+                return 0;
+            });
+            for (var i=this.length;i;){
+                this[--i]=this[i][this[i].length-1];
+            }
+            return this;
+        }
+    })();
+
     self.paginate = req.query;
-    var petOption = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN (SELECT liked.to FROM liked WHERE liked.from = '"+res.locals.pet_id+"') liked ON pet.id = liked.to WHERE liked.to IS NULL";
+    var petOption = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref, pet.updated_at FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN (SELECT liked.to FROM liked WHERE liked.from = '"+res.locals.pet_id+"') liked ON pet.id = liked.to WHERE liked.to IS NULL";
 
     var query = db.query(petOption, function(err, results){
         if(err){
@@ -40,6 +67,7 @@ module.exports.matchedPet = function(req, res){
             }
         };
 
+        self.sliced = self.sliced.sortBy( function(){ return -this.updated_at } );
         self.vaccinesData();
     };
 
@@ -79,8 +107,6 @@ module.exports.matchedPet = function(req, res){
     };
 
     self.generateRes = function () {
-        self.sliced = wsm.calculate(self.sliced,self.resPet);
-
         // slice(begin, end) note: end not included
         self.paginate.end = self.paginate.start + self.paginate.size;
         self.paginated = self.sliced.slice(self.paginate.start, self.paginate.end);
@@ -113,7 +139,7 @@ module.exports.matchedPet = function(req, res){
                     provinces : self.paginated[i].provinces
                 },
                 matched_status : {
-                    score: self.paginated[i].matched_status.score
+                    score: 0
                 }
             };
         }
