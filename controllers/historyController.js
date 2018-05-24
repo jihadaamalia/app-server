@@ -2,52 +2,84 @@ var wsm = require('./wsmController');
 
 module.exports.insertHistory = function(req, res){
     var self = this;
-    var petDetail = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref, have_vaccines.id_vaccine FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN have_vaccines ON have_vaccines.id_pet = pet.id WHERE pet.id IN ('"+res.locals.pet_id+"','"+req.body.pet_id+"')"; //check pet sex
+    var checkExisting = "SELECT pet_to, pet_from FROM history_with WHERE pet_to = "+req.body.pet_id+" AND pet_from = "+res.locals.pet_id+"";
 
-    var query = db.query(petDetail, function(err, results){
+    var query = db.query(checkExisting, function(err, results){
         if(err){
             res.json({
                 status: 500,
                 error: true,
                 error_msg: {
-                    title: 'Failed fetching data',
+                    title: 'Failed to insert data',
                     detail: err
                 },
                 response: ''
             });
             res.end();
         }
-        else if(results){
-            for (var i in results) {
-                if(results[i].id == res.locals.pet_id) {
-                    if (!self.from) {
-                        self.from = results[i]
-                        self.from.vaccines = [];
-                    }
-                    if (results[i].id_vaccine) {
-                        var vaccData = {
-                            id: results[i].id_vaccine
-                        };
-                        self.from.vaccines.push(vaccData);
-                    }
-                }
-                else if (results[i].id == req.body.pet_id) {
-                    if (!self.to) {
-                        self.to = []
-                        self.to.push(results[i])
-                        self.to[0].vaccines = [];
-                    }
-                    if (results[i].id_vaccine) {
-                        var vaccData = {
-                            id: results[i].id_vaccine
-                        };
-                        self.to[0].vaccines.push(vaccData);
-                    }
-                }
-            }
-            self.createHistory();
+        else if(results.length > 0){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: 'This pet is already on your history'
+            });
+            res.end();
+        } else {
+            self.getDataScore ();
         }
     });
+
+    self.getDataScore = function () {
+        var petDetail = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref, have_vaccines.id_vaccine FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN have_vaccines ON have_vaccines.id_pet = pet.id WHERE pet.id IN ('"+res.locals.pet_id+"','"+req.body.pet_id+"')"; //check pet sex
+        var query = db.query(petDetail, function(err, results){
+            if(err){
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed fetching data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            }
+            else if(results){
+                for (var i in results) {
+                    if(results[i].id == res.locals.pet_id) {
+                        if (!self.from) {
+                            self.from = results[i]
+                            self.from.vaccines = [];
+                        }
+                        if (results[i].id_vaccine) {
+                            var vaccData = {
+                                id: results[i].id_vaccine
+                            };
+                            self.from.vaccines.push(vaccData);
+                        }
+                    }
+                    else if (results[i].id == req.body.pet_id) {
+                        if (!self.to) {
+                            self.to = []
+                            self.to.push(results[i])
+                            self.to[0].vaccines = [];
+                        }
+                        if (results[i].id_vaccine) {
+                            var vaccData = {
+                                id: results[i].id_vaccine
+                            };
+                            self.to[0].vaccines.push(vaccData);
+                        }
+                    }
+                }
+                self.createHistory();
+            }
+        });
+    }
 
     self.createHistory = function () {
         self.to = wsm.calculate(self.to,self.from)[0];
@@ -144,4 +176,4 @@ module.exports.getSelfHistory = function (req,res) {
             });
         }
     });
-}
+};
