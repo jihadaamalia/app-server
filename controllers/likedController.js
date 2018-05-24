@@ -3,7 +3,7 @@ var wsm = require('./wsmController');
 module.exports.insertLiked = function(req, res){
     var self = this;
 
-    var insertLiked = "INSERT INTO `liked`(`from`, `to`, `like_stat`,`score`, `added_at`) VALUES ('"+res.locals.pet_id+"', '"+req.body.liked_pet+"', '"+req.body.liked_status+"', '"+req.body.score+"', CURRENT_TIMESTAMP())";
+    var insertLiked = "INSERT INTO `liked`(`from`, `to`, `like_stat`, `added_at`) VALUES ('"+res.locals.pet_id+"', '"+req.body.liked_pet+"', '"+req.body.liked_status+"', CURRENT_TIMESTAMP())";
     var query = db.query(insertLiked, function(err, results){
         if(err){
             res.json({
