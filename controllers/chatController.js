@@ -1,8 +1,9 @@
 module.exports.createRoom = function (req, res) {
     var self = this;
-    var createRoomSql = "INSERT INTO chat_room VALUES (NULL, CURRENT_TIMESTAMP)";
 
-    db.query(createRoomSql, function(err, result){
+    var checkExisting = "SELECT room_id, member_id, user_profile.name FROM chat_member JOIN pet ON pet.id = chat_member.member_id JOIN user_profile ON user_profile.id = pet.user_id WHERE room_id IN (SELECT room_id FROM chat_member WHERE member_id = "+res.locals.pet_id+") AND member_id = "+req.body.other_member+"";
+
+    db.query(checkExisting, function(err, result){
         if(err) {
             res.json({
                 status: 500,
@@ -14,11 +15,47 @@ module.exports.createRoom = function (req, res) {
                 response: ''
             });
             res.end();
-        } else if (result.affectedRows > 0) {
-            self.roomId = result.insertId
-            self.createMember ();
+        } else if (result[0]) {
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: {
+                    room_id: result[0].room_id,
+                    other_member_id: result[0].member_id,
+                    other_member_name : result[0].name
+                }
+            });
+            res.end();
+        } else {
+            self.createNew ();
         }
     });
+
+    self.createNew = function () {
+        var createRoomSql = "INSERT INTO chat_room VALUES (NULL, CURRENT_TIMESTAMP)";
+
+        db.query(createRoomSql, function(err, result){
+            if(err) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to fetch data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else if (result.affectedRows > 0) {
+                self.roomId = result.insertId;
+                self.createMember ();
+            }
+        });
+    };
 
     self.createMember = function () {
         var memberSql = "INSERT INTO `chat_member` VALUES (" + req.body.other_member + ", " + self.roomId + ", CURRENT_TIMESTAMP), (" + res.locals.pet_id + ", " + self.roomId + ", CURRENT_TIMESTAMP)";
@@ -36,6 +73,27 @@ module.exports.createRoom = function (req, res) {
                 });
                 res.end();
             } else if (result.affectedRows > 0) {
+                self.getDataMember ();
+            }
+        });
+    };
+
+    self.getDataMember = function () {
+        var dataMember = "SELECT user_profile.name, member_id, room_id FROM chat_member JOIN pet ON pet.id = chat_member.member_id JOIN user_profile ON user_profile.id = pet.user_id WHERE member_id = "+ req.body.other_member +" AND room_id = "+ self.roomId +"";
+
+        db.query(dataMember, function (err, result) {
+            if (err) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to fetch data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else {
                 res.json({
                     status: 200,
                     error: false,
@@ -43,12 +101,17 @@ module.exports.createRoom = function (req, res) {
                         title: '',
                         detail: ''
                     },
-                    response: 'Room chat created!'
+                    response: {
+                        room_id: result[0].room_id,
+                        other_member_id: result[0].member_id,
+                        other_member_name : result[0].name
+                    }
                 });
                 res.end();
             }
         });
-    }
+
+    };
 };
 
 module.exports.roomList = function (req, res) {
