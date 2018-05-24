@@ -86,7 +86,7 @@ module.exports.insertHistory = function(req, res){
 
 module.exports.getHistory = function(req, res){
     var self = this;
-    var ownPet = "SELECT history_with.pet_from, pet_f.pet_name AS from_name, pet_f.pet_photo AS from_photo, breeds_f.name AS from_breed, history_with.pet_to, pet_t.pet_name AS to_name, pet_t.pet_photo AS to_photo, breeds_t.name AS to_breed, history_with.match_stat, history_with.match_date, history_with.score FROM history_with JOIN pet pet_f ON history_with.pet_from = pet_f.id JOIN pet pet_t ON history_with.pet_to = pet_t.id JOIN breeds breeds_f ON breeds_f.id = pet_f.breed JOIN breeds breeds_t ON breeds_t.id = pet_t.breed WHERE history_with.pet_from = '"+req.params.pet_id+"'"
+    var ownPet = "SELECT history_with.pet_from, pet_f.pet_name AS from_name, pet_f.pet_photo AS from_photo, breeds_f.name AS from_breed, history_with.pet_to, pet_t.pet_name AS to_name, pet_t.pet_photo AS to_photo, breeds_t.name AS to_breed, history_with.match_stat, DATE_FORMAT(history_with.match_date, '%Y-%m-%d') AS match_date, history_with.score FROM history_with JOIN pet pet_f ON history_with.pet_from = pet_f.id JOIN pet pet_t ON history_with.pet_to = pet_t.id JOIN breeds breeds_f ON breeds_f.id = pet_f.breed JOIN breeds breeds_t ON breeds_t.id = pet_t.breed WHERE history_with.pet_from = '"+req.params.pet_id+"'"
 
     var query = db.query(ownPet, function(err, results){
         if(err){
@@ -114,3 +114,34 @@ module.exports.getHistory = function(req, res){
         }
     });
 };
+
+module.exports.getSelfHistory = function (req,res) {
+    var self = this;
+    var ownPet = "SELECT history_with.pet_from, pet_f.pet_name AS from_name, pet_f.pet_photo AS from_photo, breeds_f.name AS from_breed, history_with.pet_to, pet_t.pet_name AS to_name, pet_t.pet_photo AS to_photo, breeds_t.name AS to_breed, history_with.match_stat, DATE_FORMAT(history_with.match_date, '%Y-%m-%d') AS match_date, history_with.score FROM history_with JOIN pet pet_f ON history_with.pet_from = pet_f.id JOIN pet pet_t ON history_with.pet_to = pet_t.id JOIN breeds breeds_f ON breeds_f.id = pet_f.breed JOIN breeds breeds_t ON breeds_t.id = pet_t.breed WHERE history_with.pet_from = '"+res.locals.pet_id+"'"
+
+    var query = db.query(ownPet, function(err, results){
+        if(err){
+            res.json({
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed fetching data',
+                    detail: err
+                },
+                response: ''
+            });
+            res.end();
+        }
+        else if(results){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: results
+            });
+        }
+    });
+}
