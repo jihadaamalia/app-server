@@ -1,5 +1,3 @@
-var tools = require('../libs/tools');
-
 module.exports.matchedPet = function(req, res){
     var self = this;
     //sort
