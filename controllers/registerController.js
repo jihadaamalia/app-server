@@ -154,6 +154,7 @@ module.exports.createVaccine = function (req, res) {
     self.deleteVaccines();
 };
 
+/*
 module.exports.matchPreference = function (req, res) {
     var self = this;
     var userData = res.locals;
@@ -213,3 +214,4 @@ module.exports.matchPreference = function (req, res) {
     self.insertPreference();
 
 };
+* */

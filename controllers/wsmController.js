@@ -1,5 +1,6 @@
-module.exports.calculate = function (alternative, resource) {
+var tools = require('../libs/tools');
 
+module.exports.calculate = function (alternative, resource) {
     var self = this;
     self.criteria = [
         {
@@ -28,33 +29,6 @@ module.exports.calculate = function (alternative, resource) {
             score : [0,1]
         }
     ];
-    self.criteriaPref = [
-        {
-            title : 'age',
-            weight : 0.33,
-            score : [0,0.25,0.5,0.75,1]
-        },
-        {
-            title : 'size',
-            weight : 0.27,
-            score : [0.25,0.5,0.75,1]
-        },
-        {
-            title : 'health',
-            weight : 0.2,
-            score : [0.25,0.5,1]
-        },
-        {
-            title : 'breed',
-            weight : 0.13,
-            score : [0,0.25,0.5,0.75,1]
-        },
-        {
-            title : 'city',
-            weight : 0.07,
-            score : [0,1]
-        }
-    ];
 
     //supporting data
     self.optAgeF = 1;
@@ -64,20 +38,10 @@ module.exports.calculate = function (alternative, resource) {
         self.possibleBreed = res.split(";");
     }
 
-    //get age
-    function getAge(dateString) {
-        var today = new Date();
-        var birthDate = new Date(dateString);
-
-        var age = today.getFullYear() - birthDate.getFullYear();
-        var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    }
     //sort
     (function(){
+        // This code is copyright 2012 by Gavin Kistner, !@phrogz.net
+        // License: http://phrogz.net/JS/_ReuseLicense.txt
         if (typeof Object.defineProperty === 'function'){
             try{Object.defineProperty(Array.prototype,'sortBy',{value:sb}); }catch(e){}
         }
@@ -101,7 +65,6 @@ module.exports.calculate = function (alternative, resource) {
         }
     })();
 
-
     self.generalCalc = function (alternative, resource) {
         //sex related criteria
         if (resource.pet_sex == 'f') {
@@ -117,8 +80,8 @@ module.exports.calculate = function (alternative, resource) {
                     city: 0
                 };
 
-                self.pet_m[i].age = getAge(self.pet_m[i].pet_dob);
-                self.pet_f.age = getAge(self.pet_f.pet_dob)
+                self.pet_m[i].age = tools.getAge(self.pet_m[i].pet_dob);
+                self.pet_f.age = tools.getAge(self.pet_f.pet_dob)
 
                 //age
 
@@ -159,8 +122,8 @@ module.exports.calculate = function (alternative, resource) {
                     city: 0
                 };
 
-                self.pet_m.age = getAge(self.pet_m.pet_dob);
-                self.pet_f[i].age = getAge(self.pet_f[i].pet_dob)
+                self.pet_m.age = tools.getAge(self.pet_m.pet_dob);
+                self.pet_f[i].age = tools.getAge(self.pet_f[i].pet_dob)
 
                 //age
                 if (self.pet_f[i].age >= self.optAgeF && self.pet_m.age >= self.optAgeM) {
@@ -295,210 +258,5 @@ module.exports.calculate = function (alternative, resource) {
         return wsmRes;
     };
 
-    self.preferenceBased = function (alternative, resource) {
-
-        if (resource.pet_sex == 'f') {
-            self.pet_f = resource;
-            self.pet_m = alternative;
-
-            for (var i in self.pet_m) {
-
-                alternative[i].scores = {
-                    age: 0,
-                    size: 0,
-                    health: 0,
-                    breed: 0,
-                    city: 0
-                };
-
-                self.pet_m[i].age = getAge(self.pet_m[i].pet_dob);
-                self.pet_f.age = getAge(self.pet_f.pet_dob)
-
-                //age
-                if (self.pet_f.age_min && self.pet_f.age_max &&
-                    self.pet_f.age_min <= self.pet_m[i].age && self.pet_f.age_max <= self.pet_m[i].age) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[4];
-                } else if (self.pet_f.age >= self.optAgeF && self.pet_m[i].age >= self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[3];
-                } else if (self.pet_f.age >= self.optAgeF && self.pet_m[i].age < self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[2];
-                } else if (self.pet_f.age < self.optAgeF && self.pet_m[i].age >= self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[1];
-                } else if(self.pet_f.age < self.optAgeF && self.pet_m[i].age < self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[0];
-                }
-
-                //size
-                if (self.pet_f.size == self.pet_m[i].size) {
-                    alternative[i].scores.size = self.criteriaPref[1].score[3];
-                } else if (self.pet_f.size == 'large' && self.pet_m[i].size == 'medium' ||
-                    self.pet_f.size == 'medium' && self.pet_m[i].size == 'small') {
-                    alternative[i].scores.size = self.criteriaPref[1].score[2];
-                } else if (self.pet_f.size == 'medium' && self.pet_m[i].size == 'large' ||
-                    self.pet_f.size == 'small' && self.pet_m[i].size == 'medium') {
-                    alternative[i].scores.size = self.criteriaPref[1].score[1];
-                } else {
-                    alternative[i].scores.size = self.criteriaPref[1].score[0];
-                }
-            }
-        }
-        else {
-            self.pet_m = resource;
-            self.pet_f = alternative;
-
-            for (var i in self.pet_f) {
-                alternative[i].scores = {
-                    age: 0,
-                    size: 0,
-                    health: 0,
-                    breed: 0,
-                    city: 0
-                };
-
-                self.pet_m.age = getAge(self.pet_m.pet_dob);
-                self.pet_f[i].age = getAge(self.pet_f[i].pet_dob)
-
-                //age
-
-                if (self.pet_m.age_min && self.pet_m.age_max &&
-                    self.pet_m.age_min <= self.pet_f[i].age && self.pet_m.age_max <= self.pet_f[i].age) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[4];
-                } else if (self.pet_f[i].age >= self.optAgeF && self.pet_m.age >= self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[3];
-                } else if (self.pet_f[i].age >= self.optAgeF && self.pet_m.age < self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[2];
-                } else if (self.pet_f[i].age < self.optAgeF && self.pet_m.age >= self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[1];
-                } else if (self.pet_f[i].age < self.optAgeF && self.pet_m.age < self.optAgeM) {
-                    alternative[i].scores.age = self.criteriaPref[0].score[0];
-                }
-
-
-                //size
-                if (self.pet_f[i].size == self.pet_m.size) {
-                    alternative[i].scores.size = self.criteriaPref[1].score[3];
-                } else if (self.pet_f[i].size == 'large' && self.pet_m.size == 'medium' ||
-                    self.pet_f[i].size == 'medium' && self.pet_m.size == 'small') {
-                    alternative[i].scores.size = self.criteriaPref[1].score[2];
-                } else if (self.pet_f[i].size == 'medium' && self.pet_m.size == 'large' ||
-                    self.pet_f[i].size == 'small' && self.pet_m.size == 'medium') {
-                    alternative[i].scores.size = self.criteriaPref[1].score[1];
-                } else {
-                    alternative[i].scores.size = self.criteriaPref[1].score[0];
-                }
-            }
-        }
-
-        //general criteria
-        for (var i in alternative) {
-            //health
-            if (alternative[i].vaccines.length > 0) {
-                if (alternative[i].variant_id == 1) {
-                    var vaccines = alternative[i].vaccines;
-
-                    function getCoreDP(vaccines) {
-                        return vaccines.id == 1;
-                    }
-
-                    function getCoreDHLPI(vaccines) {
-                        return vaccines.id == 2;
-                    }
-
-                    function getCoreDHLPII(vaccines) {
-                        return vaccines.id == 3;
-                    }
-
-                    function getCoreRabies(vaccines) {
-                        return vaccines.id == 4;
-                    }
-
-
-                    if (vaccines.find(getCoreDP) &&
-                        vaccines.find(getCoreRabies) ||
-                        vaccines.find(getCoreDHLPI) ||
-                        vaccines.find(getCoreDHLPII)) {
-                        alternative[i].scores.health = self.criteria[2].score[2];
-                    } else {
-                        alternative[i].scores.health = self.criteria[2].score[1];
-                    }
-                }
-                else {
-                    var vaccines = alternative[i].vaccines;
-
-                    function getCoreFPV(vaccines) {
-                        return vaccines.id == 9;
-                    }
-
-                    function getCoreFVR(vaccines) {
-                        return vaccines.id == 10;
-                    }
-
-                    function getCoreFCV(vaccines) {
-                        return vaccines.id == 11;
-                    }
-
-                    function getCoreRabies(vaccines) {
-                        return vaccines.id == 13;
-                    }
-
-
-                    if (vaccines.find(getCoreFPV) &&
-                        vaccines.find(getCoreFVR) &&
-                        vaccines.find(getCoreFCV) &&
-                        vaccines.find(getCoreRabies)){
-                        alternative[i].scores.health = self.criteria[2].score[2];
-                    } else {
-                        alternative[i].scores.health = self.criteria[2].score[1];
-                    }
-                }
-            } else if (alternative[i].vaccines.length == 0) {
-                alternative[i].scores.health = self.criteria[2].score[0];
-            }
-
-            //breeds
-            if (resource.breed_pref && alternative[i].breed == resource.breed_pref) { //preference
-                alternative[i].scores.breed = self.criteriaPref[3].score[4];
-            } else if (alternative[i].breed == resource.breed) { //same breed or same crossbreed
-                alternative[i].scores.breed = self.criteriaPref[3].score[3];
-            } else if (!resource.mixed && !alternative[i].mixed) { //both pure but diff breed
-                if (self.possibleBreed) { //have recognized crossbreed
-                    for (var j in self.possibleBreed) {
-                        if (self.possibleBreed[j] == alternative[i].breed_name) { //both pure and new breed is common
-                            alternative[i].scores.breed = self.criteriaPref[3].score[2];
-                        } else { //both pure but new breed have not recognized
-                            alternative[i].scores.breed = self.criteriaPref[3].score[1];
-                        }
-                    }
-                } else { //both pure but new breed have not recognized
-                    alternative[i].scores.breed = self.criteriaPref[3].score[1];
-                }
-            } else if (resource.mixed || alternative[i].mixed) { //cross x pure or cross x cross
-                alternative[i].scores.breed = self.criteriaPref[3].score[0];
-            }
-
-            //city
-            if (alternative[i].city == resource.city) { //same city
-                alternative[i].scores.city = self.criteriaPref[4].score[1];
-            } else { //cross x pure or cross x cross
-                alternative[i].scores.city = self.criteriaPref[4].score[0];
-            }
-
-            alternative[i].matched_status = {
-                score: 0
-            };
-
-            alternative[i].matched_status.score = (self.criteria[0].weight * alternative[i].scores.age) + (self.criteria[1].weight * alternative[i].scores.size) + (self.criteria[2].weight * alternative[i].scores.health) + (self.criteria[3].weight * alternative[i].scores.breed) + (self.criteria[4].weight * alternative[i].scores.city);
-        }
-
-        //sort by score
-        var wsmRes = alternative.sortBy( function(){ return -this.matched_status.score } );
-
-        return wsmRes;
-    };
-
-    if (resource.breed_pref || resource.age_min || resource.age_max) {
-        return self.preferenceBased (alternative, resource);
-    } else {
-        return self.generalCalc (alternative, resource);
-    }
+    return self.generalCalc (alternative, resource);
 };
