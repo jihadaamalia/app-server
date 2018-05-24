@@ -29,7 +29,6 @@ module.exports = function(app) {
     app.post('/register/user-profile', register.createUserProf );
     app.post('/register/pet', register.createPet );
     app.post('/register/vaccine', register.createVaccine);
-    app.post('/register/preference', register.matchPreference);
 
     //get vaccine
     app.get('/breeds/:variant', pet.breeds);
@@ -51,12 +50,10 @@ module.exports = function(app) {
     //my profile
     app.get('/profile/user-profile', profile.getUserProf);
     app.get('/profile/pet', profile.getPet); //pet general info + vaccines
-    app.get('/profile/preference', profile.getPetPreference);
 
     //setting
     app.post('/setting/user-profile', setting.updateUserProf );
     app.post('/setting/pet', setting.updatePet );
-    app.post('/setting/preference', setting.updatePreference);
     app.post('/setting/vaccine', setting.updateVaccine);
 
     //setting account
@@ -72,5 +69,12 @@ module.exports = function(app) {
     //history
     app.post('/matched/history', history.insertHistory);
     app.get('/matched/history/:pet_id', history.getHistory);
+
+    /*
+    //unused preference API
+    app.post('/register/preference', register.matchPreference);
+    app.get('/profile/preference', profile.getPetPreference);
+    app.post('/setting/preference', setting.updatePreference);
+    */
 };
   

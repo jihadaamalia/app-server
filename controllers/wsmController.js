@@ -29,33 +29,6 @@ module.exports.calculate = function (alternative, resource) {
             score : [0,1]
         }
     ];
-    self.criteriaPref = [
-        {
-            title : 'age',
-            weight : 0.33,
-            score : [0,0.25,0.5,0.75,1]
-        },
-        {
-            title : 'size',
-            weight : 0.27,
-            score : [0.25,0.5,0.75,1]
-        },
-        {
-            title : 'health',
-            weight : 0.2,
-            score : [0.25,0.5,1]
-        },
-        {
-            title : 'breed',
-            weight : 0.13,
-            score : [0,0.25,0.5,0.75,1]
-        },
-        {
-            title : 'city',
-            weight : 0.07,
-            score : [0,1]
-        }
-    ];
 
     //supporting data
     self.optAgeF = 1;
