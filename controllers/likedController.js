@@ -10,7 +10,7 @@ module.exports.insertLiked = function(req, res){
                 status: 500,
                 error: true,
                 error_msg: {
-                    title: 'Failed fetching data',
+                    title: 'Failed inserting data',
                     detail: err
                 },
                 response: ''
@@ -176,4 +176,34 @@ module.exports.getLikedPet = function(req, res){
     };
 
     self.alternatives();
+};
+
+module.exports.deleteLiked = function(req, res){
+    var dislike = "DELETE FROM `liked` WHERE `from` = "+res.locals.pet_id+" AND `to` = "+req.body.pet_id+"";
+    var query = db.query(dislike, function(err, results){
+        if(err){
+            res.json({
+                status: 500,
+                error: true,
+                error_msg: {
+                    title: 'Failed delete data',
+                    detail: err
+                },
+                response: ''
+            });
+            res.end();
+        }
+        else if(results){
+            res.json({
+                status: 200,
+                error: false,
+                error_msg: {
+                    title: '',
+                    detail: ''
+                },
+                response: 'Disliked success!'
+            });
+            res.end();
+        }
+    });
 };

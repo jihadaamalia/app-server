@@ -40,12 +40,13 @@ module.exports = function(app) {
     app.get('/provinces', location.provinces); //get province
     app.get('/provinces/:prov_id', location.cities); //get city by province
 
-    //matched pet timeline
+    //pet timeline
     app.get('/matched/pet', match.matchedPet);
-    app.post('/matched/liked', liked.insertLiked);
 
-    //get liked pet data
+    //like
+    app.post('/matched/liked', liked.insertLiked);
     app.get('/matched/liked', liked.getLikedPet);
+    app.post('/matched/liked/dislike', liked.deleteLiked);
 
     //my profile
     app.get('/profile/user-profile', profile.getUserProf);
