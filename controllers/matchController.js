@@ -44,11 +44,11 @@ module.exports.matchedPet = function(req, res){
             res.end();
         }
         else if(results){
-            self.sortMatched (results)
+            self.filterMatched (results)
         }
     });
 
-    self.sortMatched = function (results) {
+    self.filterMatched = function (results) {
         self.sliced = [];
 
         for (var i in results) { //get resource pet
