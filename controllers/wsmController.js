@@ -16,7 +16,7 @@ module.exports.calculate = function (alternative, resource) {
         {
             title : 'health',
             weight : 0.2,
-            score : [0.25,0.5,1]
+            score : [0.3,0.7,1]
         },
         {
             title : 'breed',
@@ -26,7 +26,7 @@ module.exports.calculate = function (alternative, resource) {
         {
             title : 'city',
             weight : 0.07,
-            score : [0,1]
+            score : [0.5,1]
         }
     ];
 
