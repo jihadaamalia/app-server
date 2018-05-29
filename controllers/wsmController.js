@@ -33,6 +33,7 @@ module.exports.calculate = function (alternative, resource) {
     //supporting data
     self.optAgeF = 1;
     self.optAgeM = 1;
+
     if (resource.cross_possibility) {
         var res = resource.cross_possibility;
         self.possibleBreed = res.split(";");
@@ -155,59 +156,35 @@ module.exports.calculate = function (alternative, resource) {
         for (var i in alternative) {
             //health
             if (alternative[i].vaccines.length > 0) {
+                var vaccines =[];
+                for (var j in alternative[i].vaccines) {
+                    vaccines.push(alternative[i].vaccines[j].id)
+                }
+
                 if (alternative[i].variant_id == 1) {
-                    var vaccines = alternative[i].vaccines;
+                    var CoreDP = 1;
+                    var CoreDHLPI = 2;
+                    var CoreDHLPII = 3;
+                    var CoreRabies = 4;
 
-                    function getCoreDP(vaccines) {
-                        return vaccines.id == 1;
-                    }
-
-                    function getCoreDHLPI(vaccines) {
-                        return vaccines.id == 2;
-                    }
-
-                    function getCoreDHLPII(vaccines) {
-                        return vaccines.id == 3;
-                    }
-
-                    function getCoreRabies(vaccines) {
-                        return vaccines.id == 4;
-                    }
-
-
-                    if (vaccines.find(getCoreDP) &&
-                        vaccines.find(getCoreRabies) ||
-                        vaccines.find(getCoreDHLPI) ||
-                        vaccines.find(getCoreDHLPII)) {
+                    if (vaccines.includes(CoreDP) &&
+                        vaccines.includes(CoreRabies) ||
+                        vaccines.includes(CoreDHLPI) ||
+                        vaccines.includes(CoreDHLPII)) {
                         alternative[i].scores.health = self.criteria[2].score[2];
                     } else {
                         alternative[i].scores.health = self.criteria[2].score[1];
                     }
                 }
                 else {
-                    var vaccines = alternative[i].vaccines;
+                    var CoreFPV = 9;
+                    var CoreFVR = 10;
+                    var CoreFCV = 11;
+                    var CoreRabies = 13;
 
-                    function getCoreFPV(vaccines) {
-                        return vaccines.id == 9;
-                    }
-
-                    function getCoreFVR(vaccines) {
-                        return vaccines.id == 10;
-                    }
-
-                    function getCoreFCV(vaccines) {
-                        return vaccines.id == 11;
-                    }
-
-                    function getCoreRabies(vaccines) {
-                        return vaccines.id == 13;
-                    }
-
-
-                    if (vaccines.find(getCoreFPV) &&
-                        vaccines.find(getCoreFVR) &&
-                        vaccines.find(getCoreFCV) &&
-                        vaccines.find(getCoreRabies)){
+                    if (vaccines.includes(CoreFVR) &&
+                        vaccines.includes(CoreFCV) &&
+                        vaccines.includes(CoreRabies)){
                         alternative[i].scores.health = self.criteria[2].score[2];
                     } else {
                         alternative[i].scores.health = self.criteria[2].score[1];
@@ -218,6 +195,7 @@ module.exports.calculate = function (alternative, resource) {
             }
 
             //breeds
+
             if (alternative[i].breed == resource.breed) { //same breed or same crossbreed
                 alternative[i].scores.breed = self.criteria[3].score[3];
             } else if (!resource.mixed && !alternative[i].mixed) { //both pure but diff breed
@@ -225,6 +203,7 @@ module.exports.calculate = function (alternative, resource) {
                     for (var j in self.possibleBreed) {
                         if (self.possibleBreed[j] == alternative[i].breed_name) { //both pure and new breed is common
                             alternative[i].scores.breed = self.criteria[3].score[2];
+                            break;
                         } else { //both pure but new breed have not recognized
                             alternative[i].scores.breed = self.criteria[3].score[1];
                         }
