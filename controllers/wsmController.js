@@ -162,15 +162,15 @@ module.exports.calculate = function (alternative, resource) {
                 }
 
                 if (alternative[i].variant_id == 1) {
-                    var CoreDP = 1;
-                    var CoreDHLPI = 2;
-                    var CoreDHLPII = 3;
-                    var CoreRabies = 4;
+                    var parvo = 1;
+                    var distemper = 2;
+                    var adenovirus = 3;
+                    var rabies = 4;
 
-                    if (vaccines.includes(CoreDP) &&
-                        vaccines.includes(CoreRabies) ||
-                        vaccines.includes(CoreDHLPI) ||
-                        vaccines.includes(CoreDHLPII)) {
+                    if (vaccines.includes(parvo) &&
+                        vaccines.includes(distemper) &&
+                        vaccines.includes(adenovirus) &&
+                        vaccines.includes(rabies)) {
                         alternative[i].scores.health = self.criteria[2].score[2];
                     } else {
                         alternative[i].scores.health = self.criteria[2].score[1];
@@ -196,7 +196,8 @@ module.exports.calculate = function (alternative, resource) {
 
             //breeds
 
-            if (alternative[i].breed == resource.breed) { //same breed or same crossbreed
+            if (alternative[i].breed == resource.breed) {
+                console.log('matche')//same breed or same crossbreed
                 alternative[i].scores.breed = self.criteria[3].score[3];
             } else if (!resource.mixed && !alternative[i].mixed) { //both pure but diff breed
                 if (self.possibleBreed) { //have recognized crossbreed
