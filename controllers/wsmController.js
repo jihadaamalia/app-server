@@ -156,35 +156,14 @@ module.exports.calculate = function (alternative, resource) {
         for (var i in alternative) {
             //health
             if (alternative[i].vaccines.length > 0) {
-                var vaccines =[];
-                for (var j in alternative[i].vaccines) {
-                    vaccines.push(alternative[i].vaccines[j].id)
-                }
-
                 if (alternative[i].variant_id == 1) {
-                    var parvo = 1;
-                    var distemper = 2;
-                    var adenovirus = 3;
-                    var rabies = 4;
-
-                    if (vaccines.includes(parvo) &&
-                        vaccines.includes(distemper) &&
-                        vaccines.includes(adenovirus) &&
-                        vaccines.includes(rabies)) {
+                    if (alternative[i].vaccines.length == 7) {
                         alternative[i].scores.health = self.criteria[2].score[2];
                     } else {
                         alternative[i].scores.health = self.criteria[2].score[1];
                     }
-                }
-                else {
-                    var CoreFPV = 9;
-                    var CoreFVR = 10;
-                    var CoreFCV = 11;
-                    var CoreRabies = 13;
-
-                    if (vaccines.includes(CoreFVR) &&
-                        vaccines.includes(CoreFCV) &&
-                        vaccines.includes(CoreRabies)){
+                } else {
+                    if (alternative[i].vaccines.length == 5){
                         alternative[i].scores.health = self.criteria[2].score[2];
                     } else {
                         alternative[i].scores.health = self.criteria[2].score[1];
