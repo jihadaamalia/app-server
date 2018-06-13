@@ -1,0 +1,18 @@
+//get user profile
+SELECT user profile from db
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE user profile data
+END IF
+
+//get pet
+SELECT pet from db
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    SELECT vaccine from db
+    IF (vaccine exist)
+        WRITE pet and vaccine data
+    END IF
+END IF

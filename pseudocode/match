@@ -1,0 +1,36 @@
+//matched controller
+READ mypetid
+SELECT pet data from db
+IF (conn db error)
+    WRITE failed fetching data
+ELSE IF (pet data exist)
+    matched = []
+    petdata = pet data from db
+    FOR (i in result)
+        IF (result[i] = mypet)
+            resourcepet = petdata[i]
+        END IF
+    END FOR
+
+    FOR (i in result)
+        IF (result[i] != mypet OR
+            result[i].variant != resourcepet.variant OR
+            result[i].sex != resourcepet.sex)
+            PUSH result[i] to matched array
+        END IF
+    END FOR
+
+    GET vaccine data from db
+    IF (conn db error)
+        WRITE failed fetching data
+    ELSE IF (vaccines exist)
+        FOR (i in matched)
+            FOR (j in result)
+                IF (matched[i].id == result[j].id)
+                    push vaccine to matched[i].vaccine
+                END IF
+            END FOR
+        END FOR
+        WRITE list of matched pet
+    END IF
+END IF

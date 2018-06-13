@@ -1,0 +1,133 @@
+//insert liked
+READ liked data
+INSERT into liked table on db
+IF (conn db error)
+    WRITE failed inserting data
+ELSE
+    WRITE like status added
+END IF
+
+//get liked
+GET liked pet from liked table on database
+IF (conn db error)
+    WRITE failed fetching data
+ELSE IF (result is exist)
+    PUSH vaccine into liked pet data
+    GET mypet data from pet table on database
+    IF (conn db error)
+        WRITE failed fetching data
+    ELSE
+        PUSH vaccine into mypet data
+        CALCULATE liked pet score
+        WRITE list of liked pet and score
+END IF
+
+//wsm
+READ resourcePet, alternativePet
+SET criteria, age optimal for female and male
+IF (resourcePet has cross possibility)
+    SET possible breed
+END IF
+
+IF (resourcePet sex == female)
+   petM = alternativePet
+   petF = resourcePet
+   GET petM age
+   GET petF age
+   FOR (i in petM)
+        IF (petF age optimal AND petM optimal)
+           ageScore = 1
+        ELSE IF (petF age >= petF optimal age AND petM age < petM optimal age)
+           ageScore = 0.75
+        ELSE IF (petF age optimal AND petM age not optimal)
+           ageScore = 0.5
+        ELSE IF (petF age not optimal AND petM age optimal)
+           ageScore = 0.25
+        END IF
+
+        IF (size equal)
+          ageScore = 1
+        ELSE IF (petF 1 size bigger than petM)
+          ageScore = 0.75
+        ELSE IF (petF 1 size smaller than petM)
+          ageScore = 0.5
+        ELSE
+          ageScore = 0.25
+        END IF
+   END FOR
+ELSE
+   petM = resourcePet
+   petF = alternativePet
+   GET petM age
+   GET petF age
+   FOR (i in petF)
+        IF (petF age optimal AND petM optimal)
+           ageScore = 1
+        ELSE IF (petF age >= petF optimal age AND petM age < petM optimal age)
+           ageScore = 0.75
+        ELSE IF (petF age optimal AND petM age not optimal)
+           ageScore = 0.5
+        ELSE IF (petF age not optimal AND petM age optimal)
+           ageScore = 0.25
+        END IF
+
+        IF (size equal)
+          ageScore = 1
+        ELSE IF (petF 1 size bigger than petM)
+          ageScore = 0.75
+        ELSE IF (petF 1 size smaller than petM)
+          ageScore = 0.5
+        ELSE
+          ageScore = 0.25
+        END IF
+   END FOR
+END IF
+
+FOR (i in alternativePet)
+    IF (alternative pet breed same with resource pet)
+        scoreBreed = 1
+    ELSE IF (alternative purebreed AND resource purebreed)
+        IF (possibleBreed exist)
+            FOR (j in possibleBreed)
+                IF (new breed common)
+                    scoreHreed = 0.75
+                ELSE IF (new breed not recognized)
+                    scoreBreed = 0.5
+                END IF
+            END FOR
+        ELSE IF (alternative or resource mixed breed OR both mixed breed)
+            scoreBreed = 0.25
+        END IF
+    END IF
+
+    IF (alternative vaccine is exist)
+        IF (alternativePet is Dog)
+            IF (number of vaccine is 7)
+                scoreHealth = 1
+            ELSE
+                scoreHealth = 0.7
+            END IF
+        ELSE
+            IF (number of vaccine is 5)
+                scoreHealth = 1
+            ELSE
+                scoreHealth = 0.7
+            END IF
+        END IF
+    ELSE IF (vaccine is not exist)
+        scoreHealth = 0.3
+    END IF
+
+    IF (alternative and resource has same city)
+        scoreCity = 1
+    ELSE
+        scoreCity = 0.5
+    END IF
+
+    CALCULATE matched status score
+END FOR
+
+WRITE result
+
+
+

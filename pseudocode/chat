@@ -1,0 +1,67 @@
+//create room
+READ my pet, other pet
+FIND room with member mypet and other pet exist on db
+IF (conn db error)
+    WRITE failed to fetch data
+ELSE IF (room exist)
+    WRITE room id, other member id, other member name
+ELSE
+    CREATE new room on db
+    IF (conn db error)
+        WRITE failed to fetch data
+    ELSE IF (room created)
+        CREATE member for room on db
+        IF (conn db error)
+            WRITE failed to fetch data
+        ELSE
+            GET data member on db
+            IF (conn db error)
+                WRITE failed to fetch data
+            ELSE
+                WRITE room id, other member id, other member name
+            END IF
+        END IF
+    END IF
+END IF
+
+//get room id
+READ my pet id
+GET chat room where my pet is member from db
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    roomlist = db result
+    GET last message from db
+    IF (connection db error)
+        WRITE Failed to fetch data
+    ELSE
+        message = db result
+        FOR (i in roomlist)
+            IF (message.roomid == roomlist.id)
+                IF (message timestamp is the latest)
+                    SET as last_msg
+                END IF
+            END IF
+        END FOR
+
+        WRITE room list, last_msg
+    END IF
+END IF
+
+//get msg
+READ room id
+GET chat message based on room id on db
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE list of messages
+END IF
+
+//send chat
+READ message, room, my pet id
+INSERT message, room, pet id to chat msg table on db
+IF (connection db error)
+    WRITE Failed to send data
+ELSE (data inserted)
+    GET all message using chatRoom function
+END IF

@@ -1,0 +1,75 @@
+//update user
+READ userdata
+FIND email on database
+IF (connection db error)
+    WRITE failed to check email
+ELSE IF (email is already used)
+    WRITE email is already used by other acc
+ELSE
+    UPDATE user table with user data on db
+    IF (connection db error)
+        WRITE failed to update
+    ELSE
+        WRITE user data updated
+    END IF
+END IF
+
+//change pass
+READ old password, new password
+CHECK if old password correct
+IF (connection db error OR pass incorrect)
+    WRITE Your old password are incorrect
+ELSE IF (pass correct)
+    UPDATE password on db
+    IF (connection db error)
+        WRITE failed to change password
+    ELSE
+        WRITE password changed
+    END IF
+END IF
+
+//update user profile
+READ user data
+UPDATE userprofile table with user data on db
+IF (connection db error)
+    WRITE failed to update data
+ELSE
+    WRITE user profile updated!
+END IF
+
+//update pet
+READ pet data
+UPDATE pet table with pet data on db
+IF (connection db error)
+    WRITE failed to update data
+ELSE
+    WRITE pet updated!
+END IF
+
+
+//setting vaccine
+READ vaccine data
+DELETE vaccine if exist
+IF (connection db error)
+    WRITE failed to update data
+ELSE
+    FOR (var in vaccineid)
+        IF (not the last array)
+            CREATE query
+        ELSE
+            CREATE query
+        END IF
+    END FOR
+
+    INSERT have vaccine table with vaccine on db
+    IF (connection db error)
+        WRITE failed to update data
+    ELSE
+        UPDATE first login on db
+        IF (connection db error)
+            WRITE failed to update data
+        ELSE
+            WRITE vaccine inserted
+        END IF
+    END IF
+END IF

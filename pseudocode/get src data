@@ -1,0 +1,34 @@
+//vaccine
+READ variant id
+SELECT data vaccine from db based on variant id
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE list of vaccines
+END IF
+
+//breed
+READ variant id
+SELECT breed from db based on variant id
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE list of breed
+END IF
+
+//province
+SELECT province from db
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE list of provinces
+END IF
+
+//city
+READ province id
+SELECT city from db based on province id
+IF (connection db error)
+    WRITE Failed to fetch data
+ELSE
+    WRITE list of cities
+END IF

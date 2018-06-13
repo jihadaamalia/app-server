@@ -1,0 +1,33 @@
+//create history
+SELECT pet data from history table on db
+IF (conn db error)
+    WRITE failed to insert data
+ELSE IF (history exist)
+    WRITE this pet is already in history
+ELSE
+    SELECT pet detail on db
+    IF (conn db error)
+        WRITE failed fetching data
+    ELSE
+        FILTER data pet.from and data pet.to from db result
+        CALCULATE wsm
+        INSERT pet history data into history
+        IF (conn db error)
+            WRITE failed to insert data
+        ELSE
+            WRITE added to history
+        END IF
+    END IF
+END IF
+
+
+//get history
+SELECT history data on db
+IF (conn db error)
+    WRITE failed fetching data
+ELSE (db result exist)
+    WRITE list of history
+END IF
+
+
+
