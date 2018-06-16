@@ -135,18 +135,26 @@ module.exports.getLikedPet = function(req, res){
                 id : results[i].id,
                 pet_name : results[i].pet_name,
                 pet_dob : results[i].pet_dob,
-                age : results[i].age,
                 pet_sex : results[i].pet_sex,
+                furcolor : results[i].furcolor,
+                weight : results[i].weight,
                 breed_name : results[i].breed_name,
                 size : results[i].size,
                 variant : results[i].variant,
+                pet_photo : results[i].pet_photo,
+                breed_cert : results[i].breed_cert,
+                pet_desc : results[i].pet_desc,
                 vaccines : results[i].vaccines,
                 user_data : {
                     user_id : results[i].user_id,
                     name : results[i].name,
-                    city : results[i].city
+                    username : results[i].username,
+                    user_dob : results[i].user_dob,
+                    photo : results[i].photo,
+                    sex : results[i].sex,
+                    city : results[i].city,
+                    provinces : results[i].provinces
                 },
-                matched_detail : results[i].scores,
                 matched_status : {
                     score: results[i].matched_status.score
                 }
