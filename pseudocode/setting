@@ -65,11 +65,6 @@ ELSE
     IF (connection db error)
         WRITE failed to update data
     ELSE
-        UPDATE first login on db
-        IF (connection db error)
-            WRITE failed to update data
-        ELSE
-            WRITE vaccine inserted
-        END IF
+        WRITE vaccine updated!
     END IF
 END IF

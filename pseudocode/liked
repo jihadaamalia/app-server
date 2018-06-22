@@ -1,3 +1,13 @@
+//delete liked
+READ petid
+DELETE liked data for petid on table on db
+IF (conn db error)
+    WRITE failed to delete data
+ELSE
+    WRITE Dislike succed
+END IF
+
+
 //insert liked
 READ liked data
 INSERT into liked table on db
