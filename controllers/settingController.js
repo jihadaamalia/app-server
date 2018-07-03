@@ -13,7 +13,7 @@ module.exports.updateUser = function(req , res){
     db.query(checkEmail, function(err, result){
         if(err) {
             res.json({
-                status: 400,
+                status: 500,
                 error: true,
                 error_msg: {
                     title: 'Failed to check email',
@@ -24,7 +24,7 @@ module.exports.updateUser = function(req , res){
             res.end();
         } else if (result[0]){
             res.json({
-                status: 400,
+                status: 403,
                 error: true,
                 error_msg: {
                     title: 'Email already used by other account!',
@@ -39,7 +39,7 @@ module.exports.updateUser = function(req , res){
             db.query(userSql, function(err, result){
                 if(err || result.affectedRows === 0) {
                     res.json({
-                        status: 400,
+                        status: 500,
                         error: true,
                         error_msg: {
                             title: 'Failed to update data',
@@ -77,7 +77,7 @@ module.exports.changePass = function(req , res){
     db.query(sql, function(err, results) {
         if (err || results.length < 1) {
             res.json({
-                status: 404,
+                status: 401,
                 error: true,
                 error_msg: {
                     title: 'Your old password are incorrect, please try again',
@@ -101,7 +101,7 @@ module.exports.changePass = function(req , res){
         db.query(updatePass, function(err, result){
             if(err || result.affectedRows === 0) {
                 res.json({
-                    status: 400,
+                    status: 500,
                     error: true,
                     error_msg: {
                         title: 'Failed to change password',

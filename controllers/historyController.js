@@ -19,7 +19,7 @@ module.exports.insertHistory = function(req, res){
         }
         else if(results.length > 0){
             res.json({
-                status: 500,
+                status: 403,
                 error: true,
                 error_msg: {
                     title: 'This pet is already on your history',
