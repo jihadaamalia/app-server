@@ -82,9 +82,9 @@ module.exports.insertHistory = function(req, res){
     }
 
     self.createHistory = function () {
-        self.to = wsm.calculate(self.to,self.from)[0];
+        self.to = wsm.calculate(self.to,self.from);
 
-        var historySql = "INSERT INTO `history_with`(`pet_from`, `pet_to`, `match_stat`, `match_date`, `score`, `added_at`) VALUES ('"+self.from.id+"', '"+self.to.id+"', '"+req.body.status+"', CURRENT_TIMESTAMP(),'"+self.to.matched_status.score+"', CURRENT_TIMESTAMP())";
+        var historySql = "INSERT INTO `history_with`(`pet_from`, `pet_to`, `match_stat`, `match_date`, `score`, `added_at`) VALUES ('"+self.from.id+"', '"+self.to[0].id+"', '"+req.body.status+"', CURRENT_TIMESTAMP(),'"+self.to[0].matched_status.score+"', CURRENT_TIMESTAMP())";
 
         var query = db.query(historySql, function(err, results){
             if(err){

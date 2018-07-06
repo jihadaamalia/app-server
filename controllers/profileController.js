@@ -57,16 +57,29 @@ module.exports.getPet = function(req, res){
                 self.resData.vaccines = result
             }
 
-            res.json({
-                status: 200,
-                error: false,
-                error_msg: {
-                    title: '',
-                    detail: ''
-                },
-                response: self.resData
-            });
-            res.end();
+            if (err) {
+                res.json({
+                    status: 500,
+                    error: true,
+                    error_msg: {
+                        title: 'Failed to fetch data',
+                        detail: err
+                    },
+                    response: ''
+                });
+                res.end();
+            } else {
+                res.json({
+                    status: 200,
+                    error: false,
+                    error_msg: {
+                        title: '',
+                        detail: ''
+                    },
+                    response: self.resData
+                });
+                res.end();
+            }
         });
     }
 };

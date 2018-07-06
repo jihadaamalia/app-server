@@ -150,7 +150,9 @@ module.exports.matchedPet = function(req, res){
                 detail: ''
             },
             response: {
-                matchedPet: self.matchedResult
+                matchedPet: self.matchedResult,
+                totalMatchedPet: self.matchedResult.length
+
             }
         });
         res.end();
