@@ -35,6 +35,7 @@ module.exports.insertHistory = function(req, res){
 
     self.getDataScore = function () {
         var petDetail = "SELECT pet.id, pet.pet_name, DATE_FORMAT(pet.pet_dob, '%Y-%m-%d') AS pet_dob, pet.pet_sex, pet.furcolor, pet.weight, pet.breed, breeds.name AS breed_name, breeds.size, breeds.mixed, breeds.cross_possibility, variants.id AS variant_id, variants.name AS variant, pet.pet_photo, pet.breed_cert, pet.pet_desc, pet.user_id, user_profile.name, user.username, DATE_FORMAT(user_profile.user_dob, '%Y-%m-%d') AS user_dob, user_profile.photo, user_profile.sex, regencies.id AS city_id, regencies.name AS city, provinces.id AS province_id, provinces.name AS provinces, pet.breed_pref, pet.age_min, pet.age_max, pet.city_pref, have_vaccines.id_vaccine FROM `pet` JOIN `user_profile`ON pet.user_id = user_profile.id JOIN user ON user.id = user_profile.username_id JOIN breeds ON breeds.id = pet.breed JOIN regencies ON regencies.id = user_profile.city JOIN provinces ON regencies.province_id = provinces.id JOIN variants ON variants.id = breeds.variant LEFT JOIN have_vaccines ON have_vaccines.id_pet = pet.id WHERE pet.id IN ('"+res.locals.pet_id+"','"+req.body.pet_id+"')"; //check pet sex
+
         var query = db.query(petDetail, function(err, results){
             if(err){
                 res.json({
@@ -85,6 +86,8 @@ module.exports.insertHistory = function(req, res){
         self.to = wsm.calculate(self.to,self.from);
 
         var historySql = "INSERT INTO `history_with`(`pet_from`, `pet_to`, `match_stat`, `match_date`, `score`, `added_at`) VALUES ('"+self.from.id+"', '"+self.to[0].id+"', '"+req.body.status+"', CURRENT_TIMESTAMP(),'"+self.to[0].matched_status.score+"', CURRENT_TIMESTAMP())";
+        delete self.from;
+        delete self.to;
 
         var query = db.query(historySql, function(err, results){
             if(err){
